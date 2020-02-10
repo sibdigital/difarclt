@@ -1,4 +1,11 @@
 import { JetView } from "webix-jet";
+import {
+  ROOT_URL,
+  ACTION_CREATE,
+  ACTION_UPDATE,
+  CLS_CROP,
+  HEADER_CONTENT_TYPE
+} from "~/util/constants.js";
 
 export default class DataView extends JetView {
   config() {
@@ -39,14 +46,9 @@ export default class DataView extends JetView {
         {
           view: "datatable",
           id: "cropTable",
+          url: ROOT_URL + CLS_CROP,
           on: {
-            onAfterSelect: id => {
-              const item = $$("cropTable").getItem(id);
-
-              $$("name").setValue(item.name);
-              $$("number").setValue(item.number);
-              $$("code").setValue(item.code);
-            }
+            onAfterSelect: id => this.selectItem(id)
           },
           select: true, //enables selection
           columns: [
@@ -59,22 +61,23 @@ export default class DataView extends JetView {
     };
   }
 
-  init() {
-    this.loadData();
-  }
+  init() {}
 
-  loadData() {
-    $$("cropTable").load(() => {
-      return webix.ajax().get("http://localhost:8080/crop");
-    });
+  selectItem(id) {
+    const item = $$("cropTable").getItem(id);
+
+    $$("name").setValue(item.name);
+    $$("number").setValue(item.number);
+    $$("code").setValue(item.code);
   }
 
   deleteRow() {
     const id = $$("cropTable").getSelectedId();
+    const url = ROOT_URL + CLS_CROP + "/" + id;
 
     webix
       .ajax()
-      .del("http://localhost:8080/crop/" + id)
+      .del(url)
       .then(data => {
         if (data.text()) {
           $$("cropTable").remove(id);
@@ -83,6 +86,7 @@ export default class DataView extends JetView {
   }
 
   saveRow() {
+    const url = ROOT_URL + CLS_CROP + ACTION_CREATE;
     const item = {
       name: $$("name").getValue(),
       code: $$("code").getValue(),
@@ -92,9 +96,9 @@ export default class DataView extends JetView {
     webix
       .ajax()
       .headers({
-        "Content-Type": "application/json"
+        HEADER_CONTENT_TYPE
       })
-      .post("http://localhost:8080/crop/create", item)
+      .post(url, item)
       .then(data => {
         if (data.json() != null) {
           $$("cropTable").add(data.json());
@@ -103,6 +107,7 @@ export default class DataView extends JetView {
   }
 
   updateRow() {
+    const url = ROOT_URL + CLS_CROP + ACTION_UPDATE;
     const id = $$("cropTable").getSelectedId();
     const item = $$("cropTable").getItem(id);
 
@@ -113,9 +118,9 @@ export default class DataView extends JetView {
     webix
       .ajax()
       .headers({
-        "Content-Type": "application/json"
+        HEADER_CONTENT_TYPE
       })
-      .put("http://localhost:8080/crop/update", item)
+      .put(url, item)
       .then(data => {
         if (data.json() != null) {
           $$("cropTable").updateItem(id, data.json());
