@@ -12,56 +12,108 @@ export default class DataView extends JetView {
     return {
       rows: [
         {
+          view: "toolbar",
+          elements: [
+            {
+              view: "button",
+              label: "Table",
+              click: function() {
+                $$("tableSearch").show();
+                $$("cropTable").show();
+                $$("pager").show();
+                $$("cropForm").hide();
+              }
+            },
+            {
+              view: "button",
+              label: "Form",
+              click: function() {
+                $$("cropForm").show();
+                $$("cropTable").hide();
+                $$("tableSearch").hide();
+                $$("pager").hide();
+              }
+            }
+          ]
+        },
+        {
           view: "form",
           id: "cropForm",
           elements: [
             { view: "text", placeholder: "Name", id: "name" },
             { view: "text", placeholder: "Code", id: "code" },
-            { view: "text", placeholder: "Number", id: "number" }
-          ]
-        },
-        {
-          view: "toolbar",
-          elements: [
+            { view: "text", placeholder: "Number", id: "number" },
             {
-              view: "button",
-              value: "Save",
-              width: 100,
-              click: () => this.saveRow()
-            },
-            {
-              view: "button",
-              value: "Delete",
-              width: 100,
-              click: () => this.deleteRow()
-            },
-            {
-              view: "button",
-              value: "Update",
-              width: 100,
-              click: () => this.updateRow()
+              margin: 5,
+              cols: [
+                {
+                  view: "button",
+                  value: "Save",
+                  width: 100,
+                  click: () => this.saveRow()
+                },
+                {
+                  view: "button",
+                  value: "Delete",
+                  width: 100,
+                  click: () => this.deleteRow()
+                },
+                {
+                  view: "button",
+                  value: "Update",
+                  width: 100,
+                  click: () => this.updateRow()
+                }
+              ]
             }
           ]
         },
         {
+          view: "search",
+          id: "tableSearch",
+          placeholder: "Search...",
+          on: {
+            onTimedKeyPress: function() {
+              let value = this.getValue().toLowerCase();
+              if (!value) {
+                $$("cropTable").filter();
+              } else {
+                $$("cropTable").filter(function(obj) {
+                  return obj.name.toLowerCase().indexOf(value) != -1;
+                });
+              }
+            }
+          }
+        },
+        {
           view: "datatable",
           id: "cropTable",
+          width: 400,
+          columnWidth: 192,
           url: ROOT_URL + CLS_CROP,
           on: {
             onAfterSelect: id => this.selectItem(id)
           },
           select: true, //enables selection
           columns: [
-            { id: "name", header: "Name", width: "140" },
-            { id: "code", header: "Code", width: "140" },
-            { id: "number", header: "Number", width: "140" }
-          ]
+            { id: "name", header: "Name" },
+            { id: "number", header: "Number" }
+          ],
+          pager: "pager"
+        },
+        {
+          view: "pager",
+          id: "pager",
+          size: 5,
+          group: 5
         }
       ]
     };
   }
 
-  init() {}
+  init() {
+    $$("cropForm").hide();
+  }
 
   selectItem(id) {
     const item = $$("cropTable").getItem(id);
@@ -96,10 +148,11 @@ export default class DataView extends JetView {
     webix
       .ajax()
       .headers({
-        HEADER_CONTENT_TYPE
+        "Content-Type": "application/json"
       })
-      .post(url, item)
+      .post("http://localhost:8080/crop/create", item)
       .then(data => {
+        console.log(data.json());
         if (data.json() != null) {
           $$("cropTable").add(data.json());
         }
@@ -118,7 +171,7 @@ export default class DataView extends JetView {
     webix
       .ajax()
       .headers({
-        HEADER_CONTENT_TYPE
+        "Content-Type": "application/json"
       })
       .put(url, item)
       .then(data => {
