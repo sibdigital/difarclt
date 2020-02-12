@@ -1,7 +1,7 @@
 import { JetView } from "webix-jet";
 import {
   ROOT_URL,
-  CLS_CROP,
+  CLS_FIELD,
   FORM_NAME,
   FORM_CODE,
   FORM_NUMBER
@@ -34,11 +34,12 @@ export default class DataView extends JetView {
         },
         {
           view: "form",
-          id: "cropForm",
+          id: "fieldForm",
           elements: [
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Code", id: FORM_CODE },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "combo" },
             {
               margin: 5,
               cols: [
@@ -46,19 +47,19 @@ export default class DataView extends JetView {
                   view: "button",
                   value: "Save",
                   width: 100,
-                  click: () => saveRow.call(this, "cropTable", CLS_CROP)
+                  click: () => saveRow.call(this, "fieldTable", CLS_FIELD)
                 },
                 {
                   view: "button",
                   value: "Delete",
                   width: 100,
-                  click: () => deleteRow.call(this, "cropTable", CLS_CROP)
+                  click: () => deleteRow.call(this, "fieldTable", CLS_FIELD)
                 },
                 {
                   view: "button",
                   value: "Update",
                   width: 100,
-                  click: () => updateRow.call(this, "cropTable", CLS_CROP)
+                  click: () => updateRow.call(this, "fieldTable", CLS_FIELD)
                 }
               ]
             }
@@ -72,9 +73,9 @@ export default class DataView extends JetView {
             onTimedKeyPress: function() {
               const value = this.getValue().toLowerCase();
               if (!value) {
-                $$("cropTable").filter();
+                $$("fieldTable").filter();
               } else {
-                $$("cropTable").filter(function(obj) {
+                $$("fieldTable").filter(function(obj) {
                   return obj.name.toLowerCase().indexOf(value) != -1;
                 });
               }
@@ -83,12 +84,12 @@ export default class DataView extends JetView {
         },
         {
           view: "datatable",
-          id: "cropTable",
+          id: "fieldTable",
           width: 400,
           columnWidth: 190,
-          url: ROOT_URL + CLS_CROP,
+          url: ROOT_URL + CLS_FIELD,
           on: {
-            onAfterSelect: id => selectItem.call(this, "cropTable", id)
+            onAfterSelect: id => selectItem.call(this, "fieldTable", id)
           },
           select: true, //enables selection
           columns: [
@@ -108,20 +109,20 @@ export default class DataView extends JetView {
   }
 
   init() {
-    $$("cropForm").hide();
-    $$("cropTable").attachEvent("onItemDblClick", () => this.showForm());
+    $$("fieldForm").hide();
+    $$("fieldTable").attachEvent("onItemDblClick", () => this.showForm());
   }
 
   showTable() {
     $$("tableSearch").show();
-    $$("cropTable").show();
+    $$("fieldTable").show();
     $$("pager").show();
-    $$("cropForm").hide();
+    $$("fieldForm").hide();
   }
 
   showForm() {
-    $$("cropForm").show();
-    $$("cropTable").hide();
+    $$("fieldForm").show();
+    $$("fieldTable").hide();
     $$("tableSearch").hide();
     $$("pager").hide();
   }
