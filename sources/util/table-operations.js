@@ -64,12 +64,4 @@ function updateRow(table, entity) {
     });
 }
 
-function selectItem(table, id) {
-  const item = $$(table).getItem(id);
-
-  $$(FORM_NAME).setValue(item.name);
-  $$(FORM_NUMBER).setValue(item.number);
-  $$(FORM_CODE).setValue(item.code);
-}
-
-export { saveRow, deleteRow, updateRow, selectItem };
+export { saveRow, deleteRow, updateRow };

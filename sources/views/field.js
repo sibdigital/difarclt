@@ -2,6 +2,7 @@ import { JetView } from "webix-jet";
 import {
   ROOT_URL,
   CLS_FIELD,
+  CLS_ORGANIZATION,
   FORM_NAME,
   FORM_CODE,
   FORM_NUMBER
@@ -39,7 +40,11 @@ export default class DataView extends JetView {
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Code", id: FORM_CODE },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
-            { view: "combo" },
+            {
+              view: "combo",
+              id: "combo1",
+              options: {}
+            },
             {
               margin: 5,
               cols: [
@@ -111,6 +116,22 @@ export default class DataView extends JetView {
   init() {
     $$("fieldForm").hide();
     $$("fieldTable").attachEvent("onItemDblClick", () => this.showForm());
+
+    webix
+      .ajax()
+      .get(ROOT_URL + CLS_ORGANIZATION)
+      .then(function(data) {
+        let list = $$("combo1")
+          .getPopup()
+          .getList();
+        let values = [];
+        data.json().forEach(entry => {
+          values.push({ id: entry.id, value: entry });
+        });
+
+        list.clearAll();
+        list.parse(values);
+      });
   }
 
   showTable() {
