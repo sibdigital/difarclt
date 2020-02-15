@@ -6,6 +6,7 @@ import {
   FORM_NUMBER
 } from "~/util/constants.js";
 import { saveRow, deleteRow, updateRow } from "~/util/table-operations.js";
+import { ROOT_URL } from "~/util/constants.js";
 
 export default class DataView extends JetView {
   config() {
@@ -42,17 +43,17 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: "Save",
-                  click: () => saveRow.call(this, "cropTable", CLS_CROP)
+                  id: "save"
                 },
                 {
                   view: "button",
                   value: "Delete",
-                  click: () => deleteRow.call(this, "cropTable", CLS_CROP)
+                  id: "delete"
                 },
                 {
                   view: "button",
                   value: "Update",
-                  click: () => updateRow.call(this, "cropTable", CLS_CROP)
+                  id: "update"
                 }
               ]
             }
@@ -65,9 +66,19 @@ export default class DataView extends JetView {
   init() {}
 
   urlChange(view, url) {
+    $$("save").attachEvent("onItemClick", () => saveRow.call(this, CLS_CROP));
+
+    $$("delete").attachEvent("onItemClick", () =>
+      deleteRow.call(this, url[0].params.id, CLS_CROP)
+    );
+
+    $$("update").attachEvent("onItemClick", () =>
+      updateRow.call(this, url[0].params.id, CLS_CROP)
+    );
+
     webix
       .ajax()
-      .get("http://localhost:8080/crop/" + url[0].params.id)
+      .get(ROOT_URL + CLS_CROP + "/" + url[0].params.id)
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);

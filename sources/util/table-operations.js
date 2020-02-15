@@ -7,21 +7,16 @@ import {
   FORM_NUMBER
 } from "./constants.js";
 
-function deleteRow(table, entity) {
-  const id = $$(table).getSelectedId();
+function deleteRow(id, entity) {
   const url = ROOT_URL + entity + "/" + id;
 
   webix
     .ajax()
     .del(url)
-    .then(data => {
-      if (data.text()) {
-        $$(table).remove(id);
-      }
-    });
+    .then(data => console.log(data.json()));
 }
 
-function saveRow(table, entity) {
+function saveRow(entity) {
   const url = ROOT_URL + entity + ACTION_CREATE;
   const item = {
     name: $$(FORM_NAME).getValue(),
@@ -35,32 +30,29 @@ function saveRow(table, entity) {
       "Content-Type": "application/json"
     })
     .post(url, item)
-    .then(data => {
-      if (data.json() != null) {
-        $$(table).add(data.json());
-      }
-    });
+    .then(data => console.log(data.json()));
 }
 
-function updateRow(table, entity) {
-  const url = ROOT_URL + entity + ACTION_UPDATE;
-  const id = $$(table).getSelectedId();
-  const item = $$(table).getItem(id);
-
-  item.name = $$(FORM_NAME).getValue();
-  item.code = $$(FORM_CODE).getValue();
-  item.number = $$(FORM_NUMBER).getValue();
+function updateRow(id, entity) {
+  const urlPut = ROOT_URL + entity + ACTION_UPDATE;
+  const urlGet = ROOT_URL + entity + "/" + id;
 
   webix
     .ajax()
-    .headers({
-      "Content-Type": "application/json"
-    })
-    .put(url, item)
+    .get(urlGet)
     .then(data => {
-      if (data.json() != null) {
-        $$(table).updateItem(id, data.json());
-      }
+      const item = data.json();
+      item.name = $$(FORM_NAME).getValue();
+      item.code = $$(FORM_CODE).getValue();
+      item.number = $$(FORM_NUMBER).getValue();
+
+      webix
+        .ajax()
+        .headers({
+          "Content-Type": "application/json"
+        })
+        .put(urlPut, item)
+        .then(data => console.log(data.json));
     });
 }
 
