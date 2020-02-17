@@ -13,7 +13,13 @@ function deleteRow(id, entity) {
   webix
     .ajax()
     .del(url)
-    .then(data => console.log(data.json()));
+    .then(data => setBlank());
+}
+
+function setBlank() {
+  $$(FORM_NAME).setValue("");
+  $$(FORM_CODE).setValue("");
+  $$(FORM_NUMBER).setValue("");
 }
 
 function saveRow(entity) {
@@ -30,7 +36,7 @@ function saveRow(entity) {
       "Content-Type": "application/json"
     })
     .post(url, item)
-    .then(data => console.log(data.json()));
+    .then(data => setBlank());
 }
 
 function updateRow(id, entity) {
@@ -52,7 +58,7 @@ function updateRow(id, entity) {
           "Content-Type": "application/json"
         })
         .put(urlPut, item)
-        .then(data => console.log(data.json));
+        .then(data => setBlank());
     });
 }
 
