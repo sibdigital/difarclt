@@ -3,9 +3,9 @@ import {
   CLS_FIELD,
   CLS_ORGANIZATION,
   FORM_NAME,
-  FORM_CODE,
   FORM_NUMBER,
-  ACTION_CREATE
+  ACTION_CREATE,
+  ACTION_UPDATE
 } from "~/util/constants.js";
 import { ROOT_URL } from "~/util/constants.js";
 
@@ -36,7 +36,6 @@ export default class DataView extends JetView {
           id: "fieldForm",
           elements: [
             { view: "text", placeholder: "Name", id: FORM_NAME },
-            { view: "text", placeholder: "Code", id: FORM_CODE },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
             {
               view: "combo",
@@ -88,15 +87,15 @@ export default class DataView extends JetView {
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow(CLS_FIELD));
+    $$("save").attachEvent("onItemClick", () => this.saveRow());
 
-    // $$("delete").attachEvent("onItemClick", () =>
-    //   deleteRow.call(this, url[0].params.id, FIELD)
-    // );
+    $$("delete").attachEvent("onItemClick", () =>
+      this.deleteRow(url[0].params.id)
+    );
 
-    // $$("update").attachEvent("onItemClick", () =>
-    //   updateRow.call(this, url[0].params.id, CLS_FIELD)
-    // );
+    $$("update").attachEvent("onItemClick", () =>
+      this.updateRow(url[0].params.id)
+    );
 
     webix
       .ajax()
@@ -104,37 +103,69 @@ export default class DataView extends JetView {
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
-        $$(FORM_CODE).setValue(data.json().code);
       });
   }
 
-  saveRow(entity) {
-    const url = ROOT_URL + entity + ACTION_CREATE;
-    const urlOrg = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
+  saveRow() {
+    const urlPost = ROOT_URL + CLS_FIELD + ACTION_CREATE;
+    const urlGet = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
 
     let item = {
       name: $$(FORM_NAME).getValue(),
-      code: $$(FORM_CODE).getValue(),
       number: $$(FORM_NUMBER).getValue()
     };
 
     webix
       .ajax()
-      .get(urlOrg)
+      .get(urlGet)
       .then(data => {
         item.clsOrganizationByIdOrganization = data.json();
-      })
-      .then(() => {
-        console.log(item);
+
         webix
           .ajax()
           .headers({
             "Content-Type": "application/json"
           })
-          .post("http://localhost:8080/field/create", item)
+          .post(urlPost, item)
           .then(data => {
             setBlank();
           });
       });
+  }
+
+  updateRow(id) {
+    const urlPut = ROOT_URL + CLS_FIELD + ACTION_UPDATE;
+    const urlGet = ROOT_URL + CLS_FIELD + "/" + id;
+
+    webix
+      .ajax()
+      .get(urlGet)
+      .then(data => {
+        const item = data.json();
+        item.name = $$(FORM_NAME).getValue();
+        item.number = $$(FORM_NUMBER).getValue();
+
+        webix
+          .ajax()
+          .headers({
+            "Content-Type": "application/json"
+          })
+          .put(urlPut, item)
+          .then(data => this.setBlank());
+      });
+  }
+
+  deleteRow(id) {
+    const url = ROOT_URL + CLS_FIELD + "/" + id;
+
+    webix
+      .ajax()
+      .del(url)
+      .then(data => this.setBlank());
+  }
+
+  setBlank() {
+    $$(FORM_NAME).setValue("");
+    $$(FORM_NUMBER).setValue("");
   }
 }
