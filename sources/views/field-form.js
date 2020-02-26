@@ -103,6 +103,7 @@ export default class DataView extends JetView {
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
+        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization);
       });
   }
 
@@ -136,15 +137,26 @@ export default class DataView extends JetView {
   updateRow(id) {
     const urlPut = ROOT_URL + CLS_FIELD + ACTION_UPDATE;
     const urlGet = ROOT_URL + CLS_FIELD + "/" + id;
+    const urlOrg = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
+    let item;
 
     webix
       .ajax()
       .get(urlGet)
       .then(data => {
-        const item = data.json();
+        item = data.json();
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
-
+      })
+      .then(() => {
+        webix
+          .ajax()
+          .get(urlOrg)
+          .then(data => {
+            item.clsOrganizationByIdOrganization = data.json();
+          });
+      })
+      .then(() => {
         webix
           .ajax()
           .headers({
@@ -167,5 +179,6 @@ export default class DataView extends JetView {
   setBlank() {
     $$(FORM_NAME).setValue("");
     $$(FORM_NUMBER).setValue("");
+    $$("combo1").setValue("");
   }
 }
