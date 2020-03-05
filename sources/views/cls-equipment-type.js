@@ -1,5 +1,5 @@
 import { JetView } from "webix-jet";
-import { ROOT_URL, CLS_FIELD } from "~/util/constants.js";
+import { ROOT_URL, CLS_EQUIPMENT_TYPE } from "~/util/constants.js";
 
 export default class DataView extends JetView {
   config() {
@@ -13,9 +13,9 @@ export default class DataView extends JetView {
             onTimedKeyPress: function() {
               const value = this.getValue().toLowerCase();
               if (!value) {
-                $$("fieldTable").filter();
+                $$("table").filter();
               } else {
-                $$("fieldTable").filter(function(obj) {
+                $$("table").filter(function(obj) {
                   return obj.name.toLowerCase().indexOf(value) != -1;
                 });
               }
@@ -24,9 +24,10 @@ export default class DataView extends JetView {
         },
         {
           view: "datatable",
-          id: "fieldTable",
+          id: "table",
+          // width: 400,
           columnWidth: 200,
-          url: ROOT_URL + CLS_FIELD,
+          url: ROOT_URL + CLS_EQUIPMENT_TYPE,
           select: true, //enables selection
           columns: [
             { id: "name", header: "Name" },
@@ -45,8 +46,8 @@ export default class DataView extends JetView {
   }
 
   init() {
-    $$("fieldTable").attachEvent("onItemDblClick", item =>
-      this.app.show("/top/field-form?id=" + item.row)
+    $$("table").attachEvent("onItemDblClick", item =>
+      this.app.show("/top/cls-equipment-type-form?id=" + item.row)
     );
   }
 }

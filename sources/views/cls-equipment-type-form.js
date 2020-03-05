@@ -1,6 +1,6 @@
 import { JetView } from "webix-jet";
 import {
-  CLS_CROP,
+  CLS_EQUIPMENT_TYPE,
   FORM_NAME,
   FORM_CODE,
   FORM_NUMBER
@@ -20,19 +20,19 @@ export default class DataView extends JetView {
               width: 100,
               css: "webix_transparent",
               label: "Back",
-              click: () => this.app.show("/top/crop")
+              click: () => this.app.show("/top/cls-equipment-type")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: "Crom Form"
+              label: "Form"
             }
           ]
         },
         {
           view: "form",
-          id: "cropForm",
+          id: "form",
           elements: [
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Code", id: FORM_CODE },
@@ -66,19 +66,21 @@ export default class DataView extends JetView {
   init() {}
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => saveRow.call(this, CLS_CROP));
+    $$("save").attachEvent("onItemClick", () =>
+      saveRow.call(this, CLS_EQUIPMENT_TYPE)
+    );
 
     $$("delete").attachEvent("onItemClick", () =>
-      deleteRow.call(this, url[0].params.id, CLS_CROP)
+      deleteRow.call(this, url[0].params.id, CLS_EQUIPMENT_TYPE)
     );
 
     $$("update").attachEvent("onItemClick", () =>
-      updateRow.call(this, url[0].params.id, CLS_CROP)
+      updateRow.call(this, url[0].params.id, CLS_EQUIPMENT_TYPE)
     );
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_CROP + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_EQUIPMENT_TYPE + "/" + url[0].params.id)
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);

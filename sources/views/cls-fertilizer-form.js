@@ -1,9 +1,10 @@
 import { JetView } from "webix-jet";
 import {
-  CLS_FIELD,
-  CLS_ORGANIZATION,
+  CLS_FERTILIZER,
+  CLS_UNIT,
   FORM_NAME,
   FORM_NUMBER,
+  FORM_CODE,
   ACTION_CREATE,
   ACTION_UPDATE
 } from "~/util/constants.js";
@@ -21,22 +22,23 @@ export default class DataView extends JetView {
               width: 100,
               css: "webix_transparent",
               label: "Back",
-              click: () => this.app.show("/top/field")
+              click: () => this.app.show("/top/cls-fertilizer")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: "Field Form"
+              label: "Form"
             }
           ]
         },
         {
           view: "form",
-          id: "fieldForm",
+          id: "form",
           elements: [
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "text", placeholder: "Code", id: FORM_CODE },
             {
               view: "combo",
               id: "combo1",
@@ -71,7 +73,7 @@ export default class DataView extends JetView {
   init() {
     webix
       .ajax()
-      .get(ROOT_URL + CLS_ORGANIZATION)
+      .get(ROOT_URL + CLS_UNIT)
       .then(function(data) {
         const list = $$("combo1")
           .getPopup()
@@ -99,28 +101,30 @@ export default class DataView extends JetView {
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_FIELD + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_FERTILIZER + "/" + url[0].params.id)
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization);
+        $$(FORM_CODE).setValue(data.json().code);
+        $$("combo1").setValue(data.json().clsUnitByIdUnit);
       });
   }
 
   saveRow() {
-    const urlPost = ROOT_URL + CLS_FIELD + ACTION_CREATE;
-    const urlGet = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
+    const urlPost = ROOT_URL + CLS_FERTILIZER + ACTION_CREATE;
+    const urlGet = ROOT_URL + CLS_UNIT + "/" + $$("combo1").getValue();
 
     let item = {
       name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue()
+      number: $$(FORM_NUMBER).getValue(),
+      code: $$(FORM_CODE).getValue()
     };
 
     webix
       .ajax()
       .get(urlGet)
       .then(data => {
-        item.clsOrganizationByIdOrganization = data.json();
+        item.clsUnitByIdUnit = data.json();
 
         webix
           .ajax()
@@ -129,15 +133,15 @@ export default class DataView extends JetView {
           })
           .post(urlPost, item)
           .then(data => {
-            setBlank();
+            this.setBlank();
           });
       });
   }
 
   updateRow(id) {
-    const urlPut = ROOT_URL + CLS_FIELD + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_FIELD + "/" + id;
-    const urlOrg = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
+    const urlPut = ROOT_URL + CLS_FERTILIZER + ACTION_UPDATE;
+    const urlGet = ROOT_URL + CLS_FERTILIZER + "/" + id;
+    const urlUnit = ROOT_URL + CLS_UNIT + "/" + $$("combo1").getValue();
     let item;
 
     webix
@@ -147,29 +151,27 @@ export default class DataView extends JetView {
         item = data.json();
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
-      })
-      .then(() => {
+        item.code = $$(FORM_CODE).getValue();
+
         webix
           .ajax()
-          .get(urlOrg)
+          .get(urlUnit)
           .then(data => {
-            item.clsOrganizationByIdOrganization = data.json();
+            item.clsUnitByIdUnit = data.json();
+
+            webix
+              .ajax()
+              .headers({
+                "Content-Type": "application/json"
+              })
+              .put(urlPut, item)
+              .then(data => this.setBlank());
           });
-      })
-      .then(() => {
-        webix
-          .ajax()
-          .headers({
-            "Content-Type": "application/json"
-          })
-          .put(urlPut, item)
-          .then(data => this.setBlank());
       });
   }
 
   deleteRow(id) {
-    const url = ROOT_URL + CLS_FIELD + "/" + id;
-
+    const url = ROOT_URL + CLS_FERTILIZER + "/" + id;
     webix
       .ajax()
       .del(url)
@@ -179,6 +181,7 @@ export default class DataView extends JetView {
   setBlank() {
     $$(FORM_NAME).setValue("");
     $$(FORM_NUMBER).setValue("");
+    $$(FORM_CODE).setValue("");
     $$("combo1").setValue("");
   }
 }

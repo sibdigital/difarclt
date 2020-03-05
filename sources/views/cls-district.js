@@ -1,5 +1,5 @@
 import { JetView } from "webix-jet";
-import { ROOT_URL, CLS_CROP } from "~/util/constants.js";
+import { ROOT_URL, CLS_DISTRICT } from "~/util/constants.js";
 
 export default class DataView extends JetView {
   config() {
@@ -13,9 +13,9 @@ export default class DataView extends JetView {
             onTimedKeyPress: function() {
               const value = this.getValue().toLowerCase();
               if (!value) {
-                $$("cropTable").filter();
+                $$("table").filter();
               } else {
-                $$("cropTable").filter(function(obj) {
+                $$("table").filter(function(obj) {
                   return obj.name.toLowerCase().indexOf(value) != -1;
                 });
               }
@@ -24,10 +24,9 @@ export default class DataView extends JetView {
         },
         {
           view: "datatable",
-          id: "cropTable",
-          // width: 400,
+          id: "table",
           columnWidth: 200,
-          url: ROOT_URL + CLS_CROP,
+          url: ROOT_URL + CLS_DISTRICT,
           select: true, //enables selection
           columns: [
             { id: "name", header: "Name" },
@@ -46,8 +45,8 @@ export default class DataView extends JetView {
   }
 
   init() {
-    $$("cropTable").attachEvent("onItemDblClick", item =>
-      this.app.show("/top/crop-form?id=" + item.row)
+    $$("table").attachEvent("onItemDblClick", item =>
+      this.app.show("/top/cls-district-form?id=" + item.row)
     );
   }
 }
