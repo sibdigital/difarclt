@@ -40,6 +40,8 @@ export default class DataView extends JetView {
           elements: [
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "text", placeholder: "Begin age", id: "begin_age" },
+            { view: "text", placeholder: "End age", id: "end_age" },
             {
               view: "combo",
               id: "combo1",
@@ -87,73 +89,10 @@ export default class DataView extends JetView {
   }
 
   init() {
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_ORGANIZATION)
-      .then(data => {
-        const list = $$("combo1")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_STANDARD_PERIOD)
-      .then(data => {
-        const list = $$("combo2")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_DISTRICT)
-      .then(data => {
-        const list = $$("combo3")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_REGION)
-      .then(data => {
-        const list = $$("combo4")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
+    this.fillCombo(CLS_ORGANIZATION, "combo1");
+    this.fillCombo(CLS_STANDARD_PERIOD, "combo2");
+    this.fillCombo(CLS_DISTRICT, "combo3");
+    this.fillCombo(CLS_REGION, "combo4");
   }
 
   urlChange(view, url) {
@@ -173,10 +112,33 @@ export default class DataView extends JetView {
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization);
-        $$("combo2").setValue(data.json().clsStandardPeriodByIdStandardPeriod);
-        $$("combo3").setValue(data.json().clsDistrictByIdDistrict);
-        $$("combo4").setValue(data.json().clsRegionByIdRegion);
+        $$("begin_age").setValue(data.json().beginAge);
+        $$("end_age").setValue(data.json().endAge);
+        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization.id);
+        $$("combo2").setValue(
+          data.json().clsStandardPeriodByIdStandardPeriod.id
+        );
+        $$("combo3").setValue(data.json().clsDistrictByIdDistrict.id);
+        $$("combo4").setValue(data.json().clsRegionByIdRegion.id);
+      });
+  }
+
+  fillCombo(entity, combo) {
+    webix
+      .ajax()
+      .get(ROOT_URL + entity)
+      .then(data => {
+        const list = $$(combo)
+          .getPopup()
+          .getList();
+        const values = [];
+
+        data.json().forEach(entry => {
+          values.push({ id: entry.id, value: entry.name });
+        });
+
+        list.clearAll();
+        list.parse(values);
       });
   }
 

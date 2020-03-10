@@ -57,9 +57,11 @@ export default class TopView extends JetView {
         { value: "Work type", id: "cls-work-type" },
         { value: "Depart", id: "cls-depart" },
         { value: "Employee", id: "cls-employee" },
+        { value: "Protection equipment", id: "cls-protection-equipment" },
         { value: "Equipment base", id: "cls-equipment-base" },
         { value: "Position", id: "cls-position" },
-        { value: "Ranch", id: "cls-ranch" }
+        { value: "Ranch", id: "cls-ranch" },
+        { value: "Test", id: "test" }
       ]
     };
 

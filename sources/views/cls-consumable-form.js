@@ -75,39 +75,8 @@ export default class DataView extends JetView {
   }
 
   init() {
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_UNIT)
-      .then(data => {
-        const list = $$("combo1")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_CONSUMABLE_KIND)
-      .then(data => {
-        const list = $$("combo2")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
+    this.buildCombo(CLS_UNIT, "combo1");
+    this.buildCombo(CLS_CONSUMABLE_KIND, "combo2");
   }
 
   urlChange(view, url) {
@@ -129,6 +98,25 @@ export default class DataView extends JetView {
         $$(FORM_NUMBER).setValue(data.json().number);
         $$("combo1").setValue(data.json().clsUnitByIdUnit);
         $$("combo2").setValue(data.json().clsConsumableKindByIdConsumableKind);
+      });
+  }
+
+  buildCombo(classifier, combo) {
+    webix
+      .ajax()
+      .get(ROOT_URL + classifier)
+      .then(data => {
+        const list = $$(combo)
+          .getPopup()
+          .getList();
+        const values = [];
+
+        data.json().forEach(entry => {
+          values.push({ id: entry.id, value: entry.name });
+        });
+
+        list.clearAll();
+        list.parse(values);
       });
   }
 

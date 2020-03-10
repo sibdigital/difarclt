@@ -8,7 +8,7 @@ import {
 import { saveRow, deleteRow, updateRow } from "~/util/table-operations.js";
 import { ROOT_URL } from "~/util/constants.js";
 
-export default class DataView extends JetView {
+export default class AnimalGroupKindView extends JetView {
   config() {
     return {
       rows: [

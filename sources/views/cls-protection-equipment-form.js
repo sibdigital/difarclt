@@ -1,6 +1,6 @@
 import { JetView } from "webix-jet";
 import {
-  CLS_PLANT_PEST,
+  CLS_PROTECTION_EQUIPMENT,
   CLS_UNIT,
   FORM_NAME,
   FORM_NUMBER,
@@ -22,7 +22,7 @@ export default class DataView extends JetView {
               width: 100,
               css: "webix_transparent",
               label: "Back",
-              click: () => this.app.show("/top/cls-plant-pest")
+              click: () => this.app.show("/top/cls-protection-equipment")
             },
             {
               view: "label",
@@ -39,6 +39,8 @@ export default class DataView extends JetView {
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
             { view: "text", placeholder: "Code", id: FORM_CODE },
+            { view: "text", placeholder: "Max concum", id: "max_consum" },
+            { view: "text", placeholder: "Min concum", id: "min_consum" },
             {
               view: "combo",
               id: "combo1",
@@ -102,23 +104,27 @@ export default class DataView extends JetView {
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_PLANT_PEST + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_PROTECTION_EQUIPMENT + "/" + url[0].params.id)
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
         $$(FORM_CODE).setValue(data.json().code);
+        $$("max_consum").setValue(data.json().maxConsum);
+        $$("min_consum").setValue(data.json().minConsum);
         $$("combo1").setValue(data.json().clsUnitByIdUnit);
       });
   }
 
   saveRow() {
-    const urlPost = ROOT_URL + CLS_PLANT_PEST + ACTION_CREATE;
+    const urlPost = ROOT_URL + CLS_PROTECTION_EQUIPMENT + ACTION_CREATE;
     const urlGet = ROOT_URL + CLS_UNIT + "/" + $$("combo1").getValue();
 
     let item = {
       name: $$(FORM_NAME).getValue(),
       number: $$(FORM_NUMBER).getValue(),
-      code: $$(FORM_CODE).getValue()
+      code: $$(FORM_CODE).getValue(),
+      maxConsum: $$("max_consum").getValue(),
+      minConsum: $$("min_consum").getValue()
     };
 
     webix
@@ -140,8 +146,8 @@ export default class DataView extends JetView {
   }
 
   updateRow(id) {
-    const urlPut = ROOT_URL + CLS_PLANT_PEST + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_PLANT_PEST + "/" + id;
+    const urlPut = ROOT_URL + CLS_PROTECTION_EQUIPMENT + ACTION_UPDATE;
+    const urlGet = ROOT_URL + CLS_PROTECTION_EQUIPMENT + "/" + id;
     const urlUnit = ROOT_URL + CLS_UNIT + "/" + $$("combo1").getValue();
     let item;
 
@@ -153,6 +159,8 @@ export default class DataView extends JetView {
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
         item.code = $$(FORM_CODE).getValue();
+        item.maxConsum = $$("max_consum").getValue();
+        item.minConsum = $$("min_consum").getValue();
       })
       .then(() => {
         webix
@@ -173,7 +181,7 @@ export default class DataView extends JetView {
   }
 
   deleteRow(id) {
-    const url = ROOT_URL + CLS_PLANT_PEST + "/" + id;
+    const url = ROOT_URL + CLS_PROTECTION_EQUIPMENT + "/" + id;
     webix
       .ajax()
       .del(url)
@@ -185,5 +193,7 @@ export default class DataView extends JetView {
     $$(FORM_NUMBER).setValue("");
     $$(FORM_CODE).setValue("");
     $$("combo1").setValue("");
+    $$("max_consum").setValue("");
+    $$("min_consum").setValue("");
   }
 }

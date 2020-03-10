@@ -37,6 +37,7 @@ export default class DataView extends JetView {
           elements: [
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "text", placeholder: "INN", id: "inn" },
             {
               view: "combo",
               id: "combo1",
@@ -103,6 +104,7 @@ export default class DataView extends JetView {
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
+        $$("inn").setValue(data.json().inn);
         $$("combo1").setValue(data.json().clsLegalEntityByIdLegalEntity);
       });
   }
@@ -113,7 +115,8 @@ export default class DataView extends JetView {
 
     let item = {
       name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue()
+      number: $$(FORM_NUMBER).getValue(),
+      inn: $$("inn").getValue()
     };
 
     webix
@@ -146,6 +149,7 @@ export default class DataView extends JetView {
         item = data.json();
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
+        item.inn = $$("inn").getValue();
       })
       .then(() => {
         webix
@@ -176,6 +180,7 @@ export default class DataView extends JetView {
   setBlank() {
     $$(FORM_NAME).setValue("");
     $$(FORM_NUMBER).setValue("");
+    $$("inn").setValue("");
     $$("combo1").setValue("");
   }
 }

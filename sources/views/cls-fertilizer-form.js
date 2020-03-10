@@ -39,9 +39,12 @@ export default class DataView extends JetView {
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
             { view: "text", placeholder: "Code", id: FORM_CODE },
+            { view: "text", placeholder: "Max concum", id: "max_consum" },
+            { view: "text", placeholder: "Min concum", id: "min_consum" },
             {
               view: "combo",
               id: "combo1",
+              placeholder: "Unit",
               options: {}
             },
             {
@@ -106,6 +109,8 @@ export default class DataView extends JetView {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
         $$(FORM_CODE).setValue(data.json().code);
+        $$("max_consum").setValue(data.json().maxConsum);
+        $$("min_consum").setValue(data.json().minConsum);
         $$("combo1").setValue(data.json().clsUnitByIdUnit);
       });
   }
@@ -117,7 +122,9 @@ export default class DataView extends JetView {
     let item = {
       name: $$(FORM_NAME).getValue(),
       number: $$(FORM_NUMBER).getValue(),
-      code: $$(FORM_CODE).getValue()
+      code: $$(FORM_CODE).getValue(),
+      maxConsum: $$("max_consum").getValue(),
+      minConsum: $$("min_consum").getValue()
     };
 
     webix
@@ -152,6 +159,8 @@ export default class DataView extends JetView {
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
         item.code = $$(FORM_CODE).getValue();
+        item.maxConsum = $$("max_consum").getValue();
+        item.minConsum = $$("min_consum").getValue();
 
         webix
           .ajax()
@@ -183,5 +192,7 @@ export default class DataView extends JetView {
     $$(FORM_NUMBER).setValue("");
     $$(FORM_CODE).setValue("");
     $$("combo1").setValue("");
+    $$("max_consum").setValue("");
+    $$("min_consum").setValue("");
   }
 }

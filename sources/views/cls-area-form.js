@@ -103,7 +103,7 @@ export default class DataView extends JetView {
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsDistrictByIdDistrict);
+        $$("combo1").setValue(data.json().clsDistrictByIdDistrict.id);
       });
   }
 

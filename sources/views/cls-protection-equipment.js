@@ -1,5 +1,5 @@
 import { JetView } from "webix-jet";
-import { ROOT_URL, CLS_PLANT_PEST } from "~/util/constants.js";
+import { ROOT_URL, CLS_PROTECTION_EQUIPMENT } from "~/util/constants.js";
 
 export default class DataView extends JetView {
   config() {
@@ -26,7 +26,7 @@ export default class DataView extends JetView {
           view: "datatable",
           id: "table",
           columnWidth: 200,
-          url: ROOT_URL + CLS_PLANT_PEST,
+          url: ROOT_URL + CLS_PROTECTION_EQUIPMENT,
           select: true, //enables selection
           columns: [
             { id: "name", header: "Name" },
@@ -46,7 +46,7 @@ export default class DataView extends JetView {
 
   init() {
     $$("table").attachEvent("onItemDblClick", item =>
-      this.app.show("/top/protection-equipment-form?id=" + item.row)
+      this.app.show("/top/cls-protection-equipment-form?id=" + item.row)
     );
   }
 }

@@ -103,7 +103,7 @@ export default class DataView extends JetView {
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsKindAnimalByIdKindAnimal);
+        $$("combo1").setValue(data.json().clsKindAnimalByIdKindAnimal.id);
       });
   }
 
@@ -148,33 +148,26 @@ export default class DataView extends JetView {
         item = data.json();
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
-      })
-      .then(() => {
-        return new Promise(resolve => {
-          webix
-            .ajax()
-            .get(urlOrg)
-            .then(data => {
-              item.clsKindAnimalByIdKindAnimal = data.json();
-            });
-        });
-      })
-      .then(() => {
-        return new Promise(resolve => {
-          webix
-            .ajax()
-            .headers({
-              "Content-Type": "application/json"
-            })
-            .put(urlPut, item)
-            .then(data => this.setBlank());
-        });
+
+        webix
+          .ajax()
+          .get(urlOrg)
+          .then(data => {
+            item.clsKindAnimalByIdKindAnimal = data.json();
+
+            webix
+              .ajax()
+              .headers({
+                "Content-Type": "application/json"
+              })
+              .put(urlPut, item)
+              .then(data => this.setBlank());
+          });
       });
   }
 
   deleteRow(id) {
     const url = ROOT_URL + CLS_BREED + "/" + id;
-
     webix
       .ajax()
       .del(url)

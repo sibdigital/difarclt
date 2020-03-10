@@ -20,7 +20,7 @@ export default class DataView extends JetView {
               width: 100,
               css: "webix_transparent",
               label: "Back",
-              click: () => this.app.show("/top/cls-animal-param-kind")
+              click: () => this.app.show("/top/cls-legal-entity")
             },
             {
               view: "label",
@@ -36,6 +36,7 @@ export default class DataView extends JetView {
           elements: [
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "text", placeholder: "INN", id: "inn" },
             {
               margin: 5,
               cols: [
@@ -81,6 +82,7 @@ export default class DataView extends JetView {
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
+        $$("inn").setValue(data.json().inn);
       });
   }
 
@@ -88,7 +90,8 @@ export default class DataView extends JetView {
     const url = ROOT_URL + CLS_LEGAL_ENTITY + ACTION_CREATE;
     const item = {
       name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue()
+      number: $$(FORM_NUMBER).getValue(),
+      inn: $$("inn").getValue()
     };
 
     webix
@@ -111,6 +114,7 @@ export default class DataView extends JetView {
         const item = data.json();
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
+        item.inn = $$("inn").getValue();
 
         webix
           .ajax()
@@ -133,5 +137,6 @@ export default class DataView extends JetView {
   setBlank() {
     $$(FORM_NAME).setValue("");
     $$(FORM_NUMBER).setValue("");
+    $$("inn").setValue();
   }
 }

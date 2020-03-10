@@ -38,6 +38,7 @@ export default class DataView extends JetView {
           elements: [
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "text", placeholder: "Password", id: "password" },
             {
               view: "combo",
               id: "combo1",
@@ -74,40 +75,28 @@ export default class DataView extends JetView {
     };
   }
 
+  fillCombo(entity, combo) {
+    webix
+      .ajax()
+      .get(ROOT_URL + entity)
+      .then(data => {
+        const list = $$(combo)
+          .getPopup()
+          .getList();
+        const values = [];
+
+        data.json().forEach(entry => {
+          values.push({ id: entry.id, value: entry.name });
+        });
+
+        list.clearAll();
+        list.parse(values);
+      });
+  }
+
   init() {
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_ORGANIZATION)
-      .then(data => {
-        const list = $$("combo1")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_EMPLOYEE)
-      .then(data => {
-        const list = $$("combo2")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
+    this.fillCombo(CLS_ORGANIZATION, "combo1");
+    this.fillCombo(CLS_EMPLOYEE, "combo2");
   }
 
   urlChange(view, url) {
@@ -127,8 +116,9 @@ export default class DataView extends JetView {
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization);
-        $$("combo2").setValue(data.json().clsEmployeeByIdEmployee);
+        $$("password").setValue(data.json().password);
+        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization.id);
+        $$("combo2").setValue(data.json().clsEmployeeByIdEmployee.id);
       });
   }
 
@@ -140,7 +130,7 @@ export default class DataView extends JetView {
     let item = {
       name: $$(FORM_NAME).getValue(),
       number: $$(FORM_NUMBER).getValue(),
-      password: ""
+      password: $$("password").getValue()
     };
 
     webix
@@ -180,7 +170,7 @@ export default class DataView extends JetView {
         item = data.json();
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
-        item.password = "";
+        item.password = $$("password").getValue();
 
         webix
           .ajax()
@@ -219,5 +209,6 @@ export default class DataView extends JetView {
     $$(FORM_NUMBER).setValue("");
     $$("combo1").setValue("");
     $$("combo2").setValue("");
+    $$("password").setValue("");
   }
 }

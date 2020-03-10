@@ -46,7 +46,7 @@ export default class DataView extends JetView {
 
   init() {
     $$("table").attachEvent("onItemDblClick", item =>
-      this.app.show("/top/cls-field-form?id=" + item.row)
+      this.app.show("/top/cls-position-form?id=" + item.row)
     );
   }
 }

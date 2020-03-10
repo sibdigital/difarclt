@@ -8,7 +8,7 @@ import {
   FORM_NUMBER
 } from "~/util/constants.js";
 
-export default class DataView extends JetView {
+export default class AnimalParamKindView extends JetView {
   config() {
     return {
       rows: [
@@ -36,6 +36,7 @@ export default class DataView extends JetView {
           elements: [
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "text", placeholder: "Type", id: "type" },
             {
               margin: 5,
               cols: [
@@ -81,6 +82,7 @@ export default class DataView extends JetView {
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
+        $$("type").setValue(data.json().type);
       });
   }
 
@@ -88,7 +90,8 @@ export default class DataView extends JetView {
     const url = ROOT_URL + CLS_ANIMAL_PARAM_KIND + ACTION_CREATE;
     const item = {
       name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue()
+      number: $$(FORM_NUMBER).getValue(),
+      type: $$("type").getValue()
     };
 
     webix
@@ -111,6 +114,7 @@ export default class DataView extends JetView {
         const item = data.json();
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
+        item.type = $$("type").getValue();
 
         webix
           .ajax()
@@ -133,5 +137,6 @@ export default class DataView extends JetView {
   setBlank() {
     $$(FORM_NAME).setValue("");
     $$(FORM_NUMBER).setValue("");
+    $$("type").setValue("");
   }
 }

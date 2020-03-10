@@ -36,6 +36,19 @@ export default class DataView extends JetView {
           elements: [
             { view: "text", placeholder: "Name", id: FORM_NAME },
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "text", placeholder: "Period type", id: "period_type" },
+            {
+              view: "datepicker",
+              id: "date_begin",
+              placeholder: "Date begin"
+              // timepicker: true
+            },
+            {
+              view: "datepicker",
+              id: "date_end",
+              placeholder: "Date end"
+              // timepicker: true
+            },
             {
               margin: 5,
               cols: [
@@ -81,14 +94,21 @@ export default class DataView extends JetView {
       .then(data => {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
+        $$("period_type").setValue(data.json().periodType);
+        $$("date_begin").setValue(data.json().dateBegin);
+        $$("date_end").setValue(data.json().dateEnd);
       });
   }
 
   saveRow() {
+    const format = webix.Date.dateToStr("%Y-%m-%d");
     const url = ROOT_URL + CLS_STANDARD_PERIOD + ACTION_CREATE;
     const item = {
       name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue()
+      number: $$(FORM_NUMBER).getValue(),
+      periodType: $$("period_type").getValue(),
+      dateBegin: format($$("date_begin").getValue()),
+      dateEnd: format($$("date_end").getValue())
     };
 
     webix
@@ -103,6 +123,7 @@ export default class DataView extends JetView {
   updateRow(id) {
     const urlPut = ROOT_URL + CLS_STANDARD_PERIOD + ACTION_UPDATE;
     const urlGet = ROOT_URL + CLS_STANDARD_PERIOD + "/" + id;
+    const format = webix.Date.dateToStr("%Y-%m-%d");
 
     webix
       .ajax()
@@ -111,6 +132,9 @@ export default class DataView extends JetView {
         const item = data.json();
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
+        item.periodType = $$("period_type").getValue();
+        item.dateBegin = format($$("date_begin").getValue());
+        item.dateEnd = format($$("date_end").getValue());
 
         webix
           .ajax()
@@ -133,5 +157,8 @@ export default class DataView extends JetView {
   setBlank() {
     $$(FORM_NAME).setValue("");
     $$(FORM_NUMBER).setValue("");
+    $$("period_type").setValue("");
+    $$("date_begin").setValue("");
+    $$("date_end").setValue("");
   }
 }

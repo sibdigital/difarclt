@@ -40,6 +40,16 @@ export default class DataView extends JetView {
             { view: "text", placeholder: "Number", id: FORM_NUMBER },
             { view: "text", placeholder: "Code", id: FORM_CODE },
             {
+              view: "text",
+              placeholder: "MinIncubPeriod",
+              id: "minIncubPeriod"
+            },
+            {
+              view: "text",
+              placeholder: "MaxIncubPeriod",
+              id: "maxIncubPeriod"
+            },
+            {
               view: "combo",
               id: "combo1",
               options: {}
@@ -107,6 +117,8 @@ export default class DataView extends JetView {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
         $$(FORM_CODE).setValue(data.json().code);
+        $$("minIncubPeriod").setValue(data.json().minIncubPeriod);
+        $$("maxIncubPeriod").setValue(data.json().maxIncubPeriod);
         $$("combo1").setValue(data.json().clsUnitByIdUnit);
       });
   }
@@ -118,7 +130,9 @@ export default class DataView extends JetView {
     let item = {
       name: $$(FORM_NAME).getValue(),
       number: $$(FORM_NUMBER).getValue(),
-      code: $$(FORM_CODE).getValue()
+      code: $$(FORM_CODE).getValue(),
+      minIncubPeriod: $$("minIncubPeriod").getValue(),
+      maxIncubPeriod: $$("maxIncubPeriod").getValue()
     };
 
     webix
@@ -153,6 +167,8 @@ export default class DataView extends JetView {
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
         item.code = $$(FORM_CODE).getValue();
+        item.minIncubPeriod = $$("minIncubPeriod").getValue();
+        item.maxIncubPeriod = $$("maxIncubPeriod").getValue();
 
         webix
           .ajax()
@@ -183,6 +199,8 @@ export default class DataView extends JetView {
     $$(FORM_NAME).setValue("");
     $$(FORM_NUMBER).setValue("");
     $$(FORM_CODE).setValue("");
+    $$("minIncubPeriod").setValue();
+    $$("maxIncubPeriod").setValue();
     $$("combo1").setValue("");
   }
 }
