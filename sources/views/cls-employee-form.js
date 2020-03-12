@@ -6,9 +6,10 @@ import {
   FORM_NAME,
   FORM_NUMBER,
   ACTION_CREATE,
-  ACTION_UPDATE
+  ACTION_UPDATE,
+  ROOT_URL
 } from "~/util/constants.js";
-import { ROOT_URL } from "~/util/constants.js";
+import { polyglot } from "jet-locales/ru.js";
 
 export default class DataView extends JetView {
   config() {
@@ -21,14 +22,14 @@ export default class DataView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: "Back",
+              label: polyglot.t("back"),
               click: () => this.app.show("/top/cls-employee")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: "Form"
+              label: polyglot.t("form")
             }
           ]
         },
@@ -36,19 +37,21 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", placeholder: "Name", id: FORM_NAME },
-            { view: "text", placeholder: "Number", id: FORM_NUMBER },
-            { view: "text", placeholder: "First name", id: "first_name" },
-            { view: "text", placeholder: "Surname", id: "surname" },
-            { view: "text", placeholder: "Patronymic", id: "patronymic" },
+            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
+            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("first_name"), id: "first_name" },
+            { view: "text", label: polyglot.t("surname"), id: "surname" },
+            { view: "text", label: polyglot.t("patronymic"), id: "patronymic" },
             {
               view: "combo",
               id: "combo1",
+              label: polyglot.t("depart"),
               options: {}
             },
             {
               view: "combo",
               id: "combo2",
+              label: polyglot.t("organization"),
               options: {}
             },
             {
@@ -56,17 +59,17 @@ export default class DataView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: "Save",
+                  value: polyglot.t("save"),
                   id: "save"
                 },
                 {
                   view: "button",
-                  value: "Delete",
+                  value: polyglot.t("delete"),
                   id: "delete"
                 },
                 {
                   view: "button",
-                  value: "Update",
+                  value: polyglot.t("update"),
                   id: "update"
                 }
               ]
@@ -78,8 +81,8 @@ export default class DataView extends JetView {
   }
 
   init() {
-    this.fillCombo(CLS_DEPART);
-    this.fillCombo(CLS_ORGANIZATION);
+    this.fillCombo(CLS_DEPART, "combo1");
+    this.fillCombo(CLS_ORGANIZATION, "combo2");
   }
 
   urlChange(view, url) {
@@ -107,10 +110,10 @@ export default class DataView extends JetView {
       });
   }
 
-  fillCombo(classifier, combo) {
+  fillCombo(entity, combo) {
     webix
       .ajax()
-      .get(ROOT_URL + classifier)
+      .get(ROOT_URL + entity)
       .then(data => {
         const list = $$(combo)
           .getPopup()

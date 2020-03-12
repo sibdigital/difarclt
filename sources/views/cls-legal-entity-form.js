@@ -7,6 +7,7 @@ import {
   FORM_NAME,
   FORM_NUMBER
 } from "~/util/constants.js";
+import { polyglot } from "jet-locales/ru.js";
 
 export default class DataView extends JetView {
   config() {
@@ -19,14 +20,14 @@ export default class DataView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: "Back",
+              label: polyglot.t("back"),
               click: () => this.app.show("/top/cls-legal-entity")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: "Form"
+              label: polyglot.t("form")
             }
           ]
         },
@@ -34,25 +35,25 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", placeholder: "Name", id: FORM_NAME },
-            { view: "text", placeholder: "Number", id: FORM_NUMBER },
-            { view: "text", placeholder: "INN", id: "inn" },
+            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
+            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("inn"), id: "inn" },
             {
               margin: 5,
               cols: [
                 {
                   view: "button",
-                  value: "Save",
+                  value: polyglot.t("save"),
                   id: "save"
                 },
                 {
                   view: "button",
-                  value: "Delete",
+                  value: polyglot.t("delete"),
                   id: "delete"
                 },
                 {
                   view: "button",
-                  value: "Update",
+                  value: polyglot.t("update"),
                   id: "update"
                 }
               ]

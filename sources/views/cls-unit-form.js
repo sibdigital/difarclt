@@ -3,9 +3,10 @@ import {
   CLS_UNIT,
   FORM_NAME,
   FORM_CODE,
-  FORM_NUMBER
+  FORM_NUMBER,
+  ROOT_URL
 } from "~/util/constants.js";
-import { ROOT_URL } from "~/util/constants.js";
+import { polyglot } from "jet-locales/ru.js";
 
 export default class DataView extends JetView {
   config() {
@@ -18,14 +19,14 @@ export default class DataView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: "Back",
+              label: polyglot.t("back"),
               click: () => this.app.show("/top/cls-unit")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: "Form"
+              label: polyglot.t("form")
             }
           ]
         },
@@ -33,26 +34,26 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", placeholder: "Name", id: FORM_NAME },
-            { view: "text", placeholder: "Code", id: FORM_CODE },
-            { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
+            { view: "text", label: polyglot.t("code"), id: FORM_CODE },
+            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
             { view: "text", placeholder: "Reduct", id: "reduct" },
             {
               margin: 5,
               cols: [
                 {
                   view: "button",
-                  value: "Save",
+                  value: polyglot.t("save"),
                   id: "save"
                 },
                 {
                   view: "button",
-                  value: "Delete",
+                  value: polyglot.t("delete"),
                   id: "delete"
                 },
                 {
                   view: "button",
-                  value: "Update",
+                  value: polyglot.t("update"),
                   id: "update"
                 }
               ]

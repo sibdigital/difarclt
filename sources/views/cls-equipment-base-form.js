@@ -8,9 +8,10 @@ import {
   FORM_NAME,
   FORM_NUMBER,
   ACTION_CREATE,
-  ACTION_UPDATE
+  ACTION_UPDATE,
+  ROOT_URL
 } from "~/util/constants.js";
-import { ROOT_URL } from "~/util/constants.js";
+import { polyglot } from "jet-locales/ru.js";
 
 export default class DataView extends JetView {
   config() {
@@ -23,14 +24,14 @@ export default class DataView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: "Back",
+              label: polyglot.t("back"),
               click: () => this.app.show("/top/cls-equipment-base")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: "Form"
+              label: polyglot.t("form")
             }
           ]
         },
@@ -38,26 +39,30 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", placeholder: "Name", id: FORM_NAME },
-            { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
+            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
             {
               view: "combo",
               id: "combo1",
+              label: polyglot.t("organization"),
               options: {}
             },
             {
               view: "combo",
               id: "combo2",
+              label: polyglot.t("depart"),
               options: {}
             },
             {
               view: "combo",
               id: "combo3",
+              label: polyglot.t("district"),
               options: {}
             },
             {
               view: "combo",
               id: "combo4",
+              label: polyglot.t("ranch"),
               options: {}
             },
             {
@@ -65,17 +70,17 @@ export default class DataView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: "Save",
+                  value: polyglot.t("save"),
                   id: "save"
                 },
                 {
                   view: "button",
-                  value: "Delete",
+                  value: polyglot.t("delete"),
                   id: "delete"
                 },
                 {
                   view: "button",
-                  value: "Update",
+                  value: polyglot.t("update"),
                   id: "update"
                 }
               ]
@@ -87,62 +92,18 @@ export default class DataView extends JetView {
   }
 
   init() {
+    this.fillCombo(CLS_ORGANIZATION, "combo1");
+    this.fillCombo(CLS_DEPART, "combo2");
+    this.fillCombo(CLS_DISTRICT, "combo3");
+    this.fillCombo(CLS_RANCH, "combo4");
+  }
+
+  fillCombo(entity, combo) {
     webix
       .ajax()
-      .get(ROOT_URL + CLS_ORGANIZATION)
+      .get(ROOT_URL + entity)
       .then(data => {
-        const list = $$("combo1")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_DEPART)
-      .then(data => {
-        const list = $$("combo2")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_DISTRICT)
-      .then(data => {
-        const list = $$("combo3")
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_RANCH)
-      .then(data => {
-        const list = $$("combo4")
+        const list = $$(combo)
           .getPopup()
           .getList();
         const values = [];

@@ -64,13 +64,6 @@ module.exports = function(env) {
     devServer: {
       stats: "errors-only",
       port: 8000
-      // proxy: {
-      // 	"/api": {
-      // 		target: "http://localhost:8080",
-      // 		secure: false,
-      // 		changeOrigin: true
-      // 	}
-      // }
     }
   };
 

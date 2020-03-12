@@ -8,6 +8,7 @@ import {
   FORM_CODE,
   FORM_NUMBER
 } from "~/util/constants.js";
+import { polyglot } from "jet-locales/ru.js";
 
 export default class AgeSexGroupView extends JetView {
   config() {
@@ -20,14 +21,14 @@ export default class AgeSexGroupView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: "Back",
+              label: polyglot.t("back"),
               click: () => this.app.show("/top/cls-age-sex-group")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: "Form"
+              label: polyglot.t("form")
             }
           ]
         },
@@ -35,9 +36,9 @@ export default class AgeSexGroupView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", placeholder: "Name", id: FORM_NAME },
-            { view: "text", placeholder: "Code", id: FORM_CODE },
-            { view: "text", placeholder: "Number", id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
+            { view: "text", label: polyglot.t("code"), id: FORM_CODE },
+            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
             {
               view: "combo",
               placeholder: "Sex",
@@ -47,24 +48,24 @@ export default class AgeSexGroupView extends JetView {
                 { id: 2, value: "Ж" }
               ]
             },
-            { view: "text", placeholder: "Begin age", id: "begin_age" },
-            { view: "text", placeholder: "End age", id: "end_age" },
+            { view: "text", label: polyglot.t("begin_age"), id: "begin_age" },
+            { view: "text", label: polyglot.t("end_age"), id: "end_age" },
             {
               margin: 5,
               cols: [
                 {
                   view: "button",
-                  value: "Save",
+                  value: polyglot.t("save"),
                   id: "save"
                 },
                 {
                   view: "button",
-                  value: "Delete",
+                  value: polyglot.t("delete"),
                   id: "delete"
                 },
                 {
                   view: "button",
-                  value: "Update",
+                  value: polyglot.t("update"),
                   id: "update"
                 }
               ]

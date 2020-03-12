@@ -6,9 +6,10 @@ import {
   FORM_NUMBER,
   FORM_CODE,
   ACTION_CREATE,
-  ACTION_UPDATE
+  ACTION_UPDATE,
+  ROOT_URL
 } from "~/util/constants.js";
-import { ROOT_URL } from "~/util/constants.js";
+import { polyglot } from "jet-locales/ru.js";
 
 export default class DataView extends JetView {
   config() {
@@ -21,14 +22,14 @@ export default class DataView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: "Back",
+              label: polyglot.t("back"),
               click: () => this.app.show("/top/cls-plant-disease")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: "Form"
+              label: polyglot.t("form")
             }
           ]
         },
@@ -36,18 +37,18 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", placeholder: "Name", id: FORM_NAME },
-            { view: "text", placeholder: "Number", id: FORM_NUMBER },
-            { view: "text", placeholder: "Code", id: FORM_CODE },
+            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
+            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("code"), id: FORM_CODE },
             {
               view: "text",
-              placeholder: "MinIncubPeriod",
-              id: "minIncubPeriod"
+              label: polyglot.t("min_incub_period"),
+              id: "min_incub_period"
             },
             {
               view: "text",
-              placeholder: "MaxIncubPeriod",
-              id: "maxIncubPeriod"
+              label: polyglot.t("max_incub_period"),
+              id: "max_incub_period"
             },
             {
               view: "combo",
@@ -59,17 +60,17 @@ export default class DataView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: "Save",
+                  value: polyglot.t("save"),
                   id: "save"
                 },
                 {
                   view: "button",
-                  value: "Delete",
+                  value: polyglot.t("delete"),
                   id: "delete"
                 },
                 {
                   view: "button",
-                  value: "Update",
+                  value: polyglot.t("update"),
                   id: "update"
                 }
               ]
@@ -117,8 +118,8 @@ export default class DataView extends JetView {
         $$(FORM_NAME).setValue(data.json().name);
         $$(FORM_NUMBER).setValue(data.json().number);
         $$(FORM_CODE).setValue(data.json().code);
-        $$("minIncubPeriod").setValue(data.json().minIncubPeriod);
-        $$("maxIncubPeriod").setValue(data.json().maxIncubPeriod);
+        $$("min_incub_period").setValue(data.json().min_incub_period);
+        $$("max_incub_period").setValue(data.json().max_incub_period);
         $$("combo1").setValue(data.json().clsUnitByIdUnit);
       });
   }
@@ -131,8 +132,8 @@ export default class DataView extends JetView {
       name: $$(FORM_NAME).getValue(),
       number: $$(FORM_NUMBER).getValue(),
       code: $$(FORM_CODE).getValue(),
-      minIncubPeriod: $$("minIncubPeriod").getValue(),
-      maxIncubPeriod: $$("maxIncubPeriod").getValue()
+      min_incub_period: $$("min_incub_period").getValue(),
+      max_incub_period: $$("max_incub_period").getValue()
     };
 
     webix
@@ -167,8 +168,8 @@ export default class DataView extends JetView {
         item.name = $$(FORM_NAME).getValue();
         item.number = $$(FORM_NUMBER).getValue();
         item.code = $$(FORM_CODE).getValue();
-        item.minIncubPeriod = $$("minIncubPeriod").getValue();
-        item.maxIncubPeriod = $$("maxIncubPeriod").getValue();
+        item.min_incub_period = $$("min_incub_period").getValue();
+        item.max_incub_period = $$("max_incub_period").getValue();
 
         webix
           .ajax()
@@ -199,8 +200,8 @@ export default class DataView extends JetView {
     $$(FORM_NAME).setValue("");
     $$(FORM_NUMBER).setValue("");
     $$(FORM_CODE).setValue("");
-    $$("minIncubPeriod").setValue();
-    $$("maxIncubPeriod").setValue();
+    $$("min_incub_period").setValue();
+    $$("max_incub_period").setValue();
     $$("combo1").setValue("");
   }
 }

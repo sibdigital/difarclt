@@ -7,6 +7,7 @@ import {
   FORM_NAME,
   FORM_NUMBER
 } from "~/util/constants.js";
+import { polyglot } from "jet-locales/ru.js";
 
 export default class DataView extends JetView {
   config() {
@@ -19,14 +20,14 @@ export default class DataView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: "Back",
+              label: polyglot.t("back"),
               click: () => this.app.show("/top/cls-standard-period")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: "Form"
+              label: polyglot.t("form")
             }
           ]
         },
@@ -34,19 +35,23 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", placeholder: "Name", id: FORM_NAME },
-            { view: "text", placeholder: "Number", id: FORM_NUMBER },
-            { view: "text", placeholder: "Period type", id: "period_type" },
+            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
+            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            {
+              view: "text",
+              label: polyglot.t("period_type"),
+              id: "period_type"
+            },
             {
               view: "datepicker",
               id: "date_begin",
-              placeholder: "Date begin"
+              label: polyglot.t("date_begin")
               // timepicker: true
             },
             {
               view: "datepicker",
               id: "date_end",
-              placeholder: "Date end"
+              label: polyglot.t("date_end")
               // timepicker: true
             },
             {
@@ -54,17 +59,17 @@ export default class DataView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: "Save",
+                  value: polyglot.t("save"),
                   id: "save"
                 },
                 {
                   view: "button",
-                  value: "Delete",
+                  value: polyglot.t("delete"),
                   id: "delete"
                 },
                 {
                   view: "button",
-                  value: "Update",
+                  value: polyglot.t("update"),
                   id: "update"
                 }
               ]

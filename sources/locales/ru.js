@@ -1,9 +1,45 @@
-webix.i18n.locales["ru-RU"].datatable = {
-  labels: {
-    common: "Общий",
-    currency: "Валюта"
-  },
-  tooltips: {
-    color: "Цвет текста"
-  }
-};
+import Polyglot from "node-polyglot";
+
+export const polyglot = new Polyglot();
+polyglot.extend({
+  name: "Название",
+  number: "Номер",
+  code: "Код",
+  first_name: "Имя",
+  surname: "Фамилия",
+  patronymic: "Отчество",
+  date_begin: "Дата начала",
+  date_end: "Дата конца",
+  begin_age: "Начальный возраст",
+  end_age: "Конечный возраст",
+  inn: "ИНН",
+  max_incub_period: "Максимальный инкубационный период",
+  min_incub_period: "Минимальный инкубационный период",
+  max_consum: "Нормативный расход максимальный",
+  min_consum: "Нормативный расход минимальный",
+  password: "Пароль",
+  period_type: "Тип периода",
+  predefined: "Преопределенное",
+  ratio: "Соотношение",
+  sex: "Пол",
+  type: "Тип",
+  back: "Назад",
+  search: "Поиск",
+  form: "Форма",
+  save: "Сохранить",
+  delete: "Удалить",
+  update: "Обновить",
+  animal_kind: "Вид животного",
+  crop: "Сельскохозяйственная культура",
+  consumable_kind: "Вид расходного материала",
+  district: "Район",
+  depart: "Подразделение",
+  equipment_kind: "Вид техники",
+  equipment_type: "Тип техники",
+  organization: "Организация",
+  legal_entity: "Юридическое лицо",
+  standard_period: "Стандартный период",
+  ranch: "Ферма",
+  region: "Регион",
+  unit: "Единица измерения",
+});

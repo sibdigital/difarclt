@@ -1,14 +1,16 @@
 import { JetView } from "webix-jet";
 import { ROOT_URL, CLS_CROP } from "~/util/constants.js";
+import { polyglot } from "jet-locales/ru.js";
 
 export default class DataView extends JetView {
   config() {
+    webix.i18n.setLocale("ru-RU");
     return {
       rows: [
         {
           view: "search",
           id: "tableSearch",
-          placeholder: "Search...",
+          placeholder: polyglot.t("search"),
           on: {
             onTimedKeyPress: function() {
               const value = this.getValue().toLowerCase();
@@ -30,8 +32,8 @@ export default class DataView extends JetView {
           url: ROOT_URL + CLS_CROP,
           select: true, //enables selection
           columns: [
-            { id: "name", header: "Name" },
-            { id: "number", header: "Number" }
+            { id: "name", header: polyglot.t("name") },
+            { id: "number", header: polyglot.t("number") }
           ],
           pager: "pager"
         },
