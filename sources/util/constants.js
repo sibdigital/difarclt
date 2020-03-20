@@ -45,12 +45,6 @@ const CLS_EQUIPMENT_BASE = "/equipment-base";
 const CLS_POSITION = "/position";
 const CLS_RANCH = "/ranch";
 
-const FORM_NAME = "name";
-const FORM_NUMBER = "number";
-const FORM_CODE = "code";
-
-const HEADER_CONTENT_TYPE = '"Content-Type": "application/json"';
-
 export {
   ROOT_URL,
   ACTION_CREATE,
@@ -96,9 +90,5 @@ export {
   CLS_DEPART,
   CLS_EQUIPMENT_BASE,
   CLS_POSITION,
-  CLS_RANCH,
-  FORM_NAME,
-  FORM_CODE,
-  FORM_NUMBER,
-  HEADER_CONTENT_TYPE
+  CLS_RANCH
 };

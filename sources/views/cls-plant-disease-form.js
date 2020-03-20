@@ -2,9 +2,6 @@ import { JetView } from "webix-jet";
 import {
   CLS_PLANT_DISEASE,
   CLS_UNIT,
-  FORM_NAME,
-  FORM_NUMBER,
-  FORM_CODE,
   ACTION_CREATE,
   ACTION_UPDATE,
   ROOT_URL
@@ -37,9 +34,9 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
-            { view: "text", label: polyglot.t("code"), id: FORM_CODE },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
+            { view: "text", label: polyglot.t("code"), id: "code" },
             {
               view: "text",
               label: polyglot.t("min_incub_period"),
@@ -115,9 +112,9 @@ export default class DataView extends JetView {
       .ajax()
       .get(ROOT_URL + CLS_PLANT_DISEASE + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
-        $$(FORM_CODE).setValue(data.json().code);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
+        $$("code").setValue(data.json().code);
         $$("min_incub_period").setValue(data.json().min_incub_period);
         $$("max_incub_period").setValue(data.json().max_incub_period);
         $$("combo1").setValue(data.json().clsUnitByIdUnit);
@@ -129,9 +126,9 @@ export default class DataView extends JetView {
     const urlGet = ROOT_URL + CLS_UNIT + "/" + $$("combo1").getValue();
 
     let item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue(),
-      code: $$(FORM_CODE).getValue(),
+      name: $$("name").getValue(),
+      number: $$("number").getValue(),
+      code: $$("code").getValue(),
       min_incub_period: $$("min_incub_period").getValue(),
       max_incub_period: $$("max_incub_period").getValue()
     };
@@ -165,9 +162,9 @@ export default class DataView extends JetView {
       .get(urlGet)
       .then(data => {
         item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
-        item.code = $$(FORM_CODE).getValue();
+        item.name = $$("name").getValue();
+        item.number = $$("number").getValue();
+        item.code = $$("code").getValue();
         item.min_incub_period = $$("min_incub_period").getValue();
         item.max_incub_period = $$("max_incub_period").getValue();
 
@@ -197,9 +194,9 @@ export default class DataView extends JetView {
   }
 
   setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
-    $$(FORM_CODE).setValue("");
+    $$("name").setValue("");
+    $$("number").setValue("");
+    $$("code").setValue("");
     $$("min_incub_period").setValue();
     $$("max_incub_period").setValue();
     $$("combo1").setValue("");

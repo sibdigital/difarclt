@@ -1,16 +1,11 @@
 import { JetView } from "webix-jet";
-import {
-  CLS_ANIMAL_GROUP_KIND,
-  FORM_NAME,
-  FORM_CODE,
-  FORM_NUMBER,
-  ROOT_URL
-} from "~/util/constants.js";
-import { saveRow, deleteRow, updateRow } from "~/util/table-operations.js";
+import { CLS_ANIMAL_GROUP_KIND, ROOT_URL } from "~/util/constants.js";
+import { saveRow, deleteRow, updateRow } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
 export default class AnimalGroupKindView extends JetView {
   config() {
+    this.item = {};
     return {
       rows: [
         {
@@ -35,26 +30,29 @@ export default class AnimalGroupKindView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("code"), id: FORM_CODE },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("code"), id: "code" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             {
               margin: 5,
               cols: [
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_ANIMAL_GROUP_KIND, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_ANIMAL_GROUP_KIND, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_ANIMAL_GROUP_KIND, this.item)
                 }
               ]
             }
@@ -64,28 +62,30 @@ export default class AnimalGroupKindView extends JetView {
     };
   }
 
-  init() {}
+  init() {
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
+
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("code").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+  }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () =>
-      saveRow.call(this, CLS_ANIMAL_GROUP_KIND)
-    );
-
-    $$("delete").attachEvent("onItemClick", () =>
-      deleteRow.call(this, url[0].params.id, CLS_ANIMAL_GROUP_KIND)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      updateRow.call(this, url[0].params.id, CLS_ANIMAL_GROUP_KIND)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_ANIMAL_GROUP_KIND + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_ANIMAL_GROUP_KIND + "/" + this.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
-        $$(FORM_CODE).setValue(data.json().code);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
+        $$("code").setValue(data.json().code);
       });
   }
 }

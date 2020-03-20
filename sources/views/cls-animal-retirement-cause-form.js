@@ -1,16 +1,20 @@
 import { JetView } from "webix-jet";
 import {
   CLS_ANIMAL_RETIREMENT_CAUSE,
-  FORM_NAME,
-  FORM_CODE,
-  FORM_NUMBER,
   ACTION_CREATE,
   ACTION_UPDATE,
   ROOT_URL
 } from "~/util/constants.js";
+import {
+  fillCombo,
+  setDependency,
+  saveRow,
+  deleteRow,
+  updateRow
+} from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class AnimalRetirementCauseView extends JetView {
   config() {
     return {
       rows: [
@@ -36,9 +40,9 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("code"), id: FORM_CODE },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("code"), id: "code" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             {
               view: "combo",
               id: "combo1",
@@ -104,9 +108,9 @@ export default class DataView extends JetView {
       .ajax()
       .get(ROOT_URL + CLS_ANIMAL_RETIREMENT_CAUSE + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
-        $$(FORM_CODE).setValue(data.json().code);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
+        $$("code").setValue(data.json().code);
       });
   }
 
@@ -114,9 +118,9 @@ export default class DataView extends JetView {
     const urlPost = ROOT_URL + CLS_ANIMAL_RETIREMENT_CAUSE + ACTION_CREATE;
 
     let item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue(),
-      code: $$(FORM_CODE).getValue(),
+      name: $$("name").getValue(),
+      number: $$("number").getValue(),
+      code: $$("code").getValue(),
       idParent: $$("combo1").getValue(),
       parentPath: "0000"
     };
@@ -140,8 +144,8 @@ export default class DataView extends JetView {
       .get(urlGet)
       .then(data => {
         item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
+        item.name = $$("name").getValue();
+        item.number = $$("number").getValue();
         item.idParent = $$("combo1").getValue();
         item.parentPath = "00000";
 
@@ -164,9 +168,9 @@ export default class DataView extends JetView {
   }
 
   setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
-    $$(FORM_CODE).setValue("");
+    $$("name").setValue("");
+    $$("number").setValue("");
+    $$("code").setValue("");
     $$("combo1").setValue("");
   }
 }

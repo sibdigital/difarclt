@@ -1,17 +1,11 @@
 import { JetView } from "webix-jet";
-import {
-  ROOT_URL,
-  CLS_AGE_SEX_GROUP,
-  ACTION_CREATE,
-  ACTION_UPDATE,
-  FORM_NAME,
-  FORM_CODE,
-  FORM_NUMBER
-} from "~/util/constants.js";
+import { ROOT_URL, CLS_AGE_SEX_GROUP } from "~/util/constants.js";
+import { saveRow, deleteRow, updateRow } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
 export default class AgeSexGroupView extends JetView {
   config() {
+    this.item = {};
     return {
       rows: [
         {
@@ -36,12 +30,12 @@ export default class AgeSexGroupView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("code"), id: FORM_CODE },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("code"), id: "code" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             {
               view: "combo",
-              placeholder: "Sex",
+              label: polyglot.t("sex"),
               id: "sex",
               options: [
                 { id: 1, value: "М" },
@@ -56,17 +50,20 @@ export default class AgeSexGroupView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_AGE_SEX_GROUP, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_AGE_SEX_GROUP, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_AGE_SEX_GROUP, this.item)
                 }
               ]
             }
@@ -76,92 +73,32 @@ export default class AgeSexGroupView extends JetView {
     };
   }
 
-  init() {}
+  init() {
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
+
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("code").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+  }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id, CLS_AGE_SEX_GROUP)
-    );
-
+    this.id = url[0].params.id;
     webix
       .ajax()
       .get(ROOT_URL + CLS_AGE_SEX_GROUP + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
-        $$(FORM_CODE).setValue(data.json().code);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
+        $$("code").setValue(data.json().code);
         $$("sex").setValue(data.json().sex);
         $$("begin_age").setValue(data.json().beginAge);
         $$("end_age").setValue(data.json().endAge);
       });
-  }
-
-  saveRow() {
-    const url = ROOT_URL + CLS_AGE_SEX_GROUP + ACTION_CREATE;
-    const item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue(),
-      code: $$(FORM_CODE).getValue(),
-      sex: $$("sex").getValue(),
-      beginAge: $$("begin_age").getValue(),
-      endAge: $$("end_age").getValue()
-    };
-
-    webix
-      .ajax()
-      .headers({
-        "Content-Type": "application/json"
-      })
-      .post(url, item)
-      .then(data => this.setBlank());
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_AGE_SEX_GROUP + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_AGE_SEX_GROUP + "/" + id;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        const item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
-        item.code = $$(FORM_CODE).getValue();
-        item.sex = $$("sex").getValue();
-        item.beginAge = $$("begin_age").getValue();
-        item.endAge = $$("end_age").getValue();
-
-        webix
-          .ajax()
-          .headers({
-            "Content-Type": "application/json"
-          })
-          .put(urlPut, item)
-          .then(data => this.setBlank());
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_AGE_SEX_GROUP + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
-    $$(FORM_CODE).setValue("");
-    $$("sex").setValue("");
-    $$("begin_age").setValue("");
-    $$("end_age").setValue("");
   }
 }

@@ -3,9 +3,7 @@ import {
   ROOT_URL,
   CLS_LEGAL_ENTITY,
   ACTION_CREATE,
-  ACTION_UPDATE,
-  FORM_NAME,
-  FORM_NUMBER
+  ACTION_UPDATE
 } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
 
@@ -35,8 +33,8 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             { view: "text", label: polyglot.t("inn"), id: "inn" },
             {
               margin: 5,
@@ -81,8 +79,8 @@ export default class DataView extends JetView {
       .ajax()
       .get(ROOT_URL + CLS_LEGAL_ENTITY + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
         $$("inn").setValue(data.json().inn);
       });
   }
@@ -90,8 +88,8 @@ export default class DataView extends JetView {
   saveRow() {
     const url = ROOT_URL + CLS_LEGAL_ENTITY + ACTION_CREATE;
     const item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue(),
+      name: $$("name").getValue(),
+      number: $$("number").getValue(),
       inn: $$("inn").getValue()
     };
 
@@ -113,8 +111,8 @@ export default class DataView extends JetView {
       .get(urlGet)
       .then(data => {
         const item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
+        item.name = $$("name").getValue();
+        item.number = $$("number").getValue();
         item.inn = $$("inn").getValue();
 
         webix
@@ -136,8 +134,8 @@ export default class DataView extends JetView {
   }
 
   setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
+    $$("name").setValue("");
+    $$("number").setValue("");
     $$("inn").setValue();
   }
 }

@@ -1,17 +1,17 @@
 import { JetView } from "webix-jet";
+import { CLS_BREED, CLS_KIND_ANIMAL, ROOT_URL } from "~/util/constants.js";
 import {
-  CLS_BREED,
-  CLS_KIND_ANIMAL,
-  FORM_NAME,
-  FORM_NUMBER,
-  ACTION_CREATE,
-  ACTION_UPDATE,
-  ROOT_URL
-} from "~/util/constants.js";
+  fillCombo,
+  setDependency,
+  saveRow,
+  deleteRow,
+  updateRow
+} from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
 export default class DataView extends JetView {
   config() {
+    this.item = {};
     return {
       rows: [
         {
@@ -36,8 +36,8 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             {
               view: "combo",
               id: "combo1",
@@ -50,17 +50,20 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_BREED, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_BREED, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_BREED, this.item)
                 }
               ]
             }
@@ -71,114 +74,36 @@ export default class DataView extends JetView {
   }
 
   init() {
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_KIND_ANIMAL)
-      .then(function(data) {
-        const list = $$("combo1")
-          .getPopup()
-          .getList();
-        const values = [];
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
 
-        list.clearAll();
-        list.parse(values);
-      });
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("combo1").attachEvent("onChange", value => {
+      setDependency(
+        CLS_KIND_ANIMAL,
+        value,
+        this.item,
+        "clsKindAnimalByIdKindAnimal"
+      );
+    });
+
+    fillCombo(CLS_KIND_ANIMAL, "combo1");
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
       .get(ROOT_URL + CLS_BREED + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
         $$("combo1").setValue(data.json().clsKindAnimalByIdKindAnimal.id);
       });
-  }
-
-  saveRow() {
-    const urlPost = ROOT_URL + CLS_BREED + ACTION_CREATE;
-    const urlGet = ROOT_URL + CLS_KIND_ANIMAL + "/" + $$("combo1").getValue();
-
-    let item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue()
-    };
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item.clsKindAnimalByIdKindAnimal = data.json();
-      })
-      .then(() => {
-        webix
-          .ajax()
-          .headers({
-            "Content-Type": "application/json"
-          })
-          .post(urlPost, item)
-          .then(data => {
-            this.setBlank();
-          });
-      });
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_BREED + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_BREED + "/" + id;
-    const urlOrg = ROOT_URL + CLS_KIND_ANIMAL + "/" + $$("combo1").getValue();
-    let item;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
-
-        webix
-          .ajax()
-          .get(urlOrg)
-          .then(data => {
-            item.clsKindAnimalByIdKindAnimal = data.json();
-
-            webix
-              .ajax()
-              .headers({
-                "Content-Type": "application/json"
-              })
-              .put(urlPut, item)
-              .then(data => this.setBlank());
-          });
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_BREED + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
-    $$("combo1").setValue("");
   }
 }

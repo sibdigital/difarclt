@@ -5,16 +5,21 @@ import {
   CLS_DEPART,
   CLS_DISTRICT,
   CLS_RANCH,
-  FORM_NAME,
-  FORM_NUMBER,
   ACTION_CREATE,
   ACTION_UPDATE,
   ROOT_URL
 } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
+import { saveRow, fillCombo } from "../util/api";
 
 export default class DataView extends JetView {
   config() {
+    this.item = {
+      name: "",
+      number: "",
+      clsOrganizationByIdOrganization: null
+    };
+
     return {
       rows: [
         {
@@ -39,8 +44,12 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            {
+              view: "text",
+              label: polyglot.t("name"),
+              id: "name"
+            },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             {
               view: "combo",
               id: "combo1",
@@ -71,7 +80,8 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_EQUIPMENT_BASE, this.item)
                 },
                 {
                   view: "button",
@@ -92,177 +102,55 @@ export default class DataView extends JetView {
   }
 
   init() {
-    this.fillCombo(CLS_ORGANIZATION, "combo1");
-    this.fillCombo(CLS_DEPART, "combo2");
-    this.fillCombo(CLS_DISTRICT, "combo3");
-    this.fillCombo(CLS_RANCH, "combo4");
-  }
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
 
-  fillCombo(entity, combo) {
-    webix
-      .ajax()
-      .get(ROOT_URL + entity)
-      .then(data => {
-        const list = $$(combo)
-          .getPopup()
-          .getList();
-        const values = [];
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
 
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
+    $$("combo1").attachEvent("onChange", value => {
+      setDependency(
+        CLS_ORGANIZATION,
+        value,
+        this.item,
+        "clsOrganizationByIdOrganization"
+      );
+    });
 
-        list.clearAll();
-        list.parse(values);
-      });
+    $$("combo2").attachEvent("onChange", value => {
+      setDependency(CLS_DEPART, value, this.item, "clsDepartByIdDepart");
+    });
+
+    $$("combo3").attachEvent("onChange", value => {
+      setDependency(CLS_DISTRICT, value, this.item, "clsDistrictByIdDistrict");
+    });
+
+    $$("combo4").attachEvent("onChange", value => {
+      setDependency(CLS_RANCH, value, this.item, "clsRanchByIdRanch");
+    });
+
+    fillCombo(CLS_ORGANIZATION, "combo1");
+    fillCombo(CLS_DEPART, "combo2");
+    fillCombo(CLS_DISTRICT, "combo3");
+    fillCombo(CLS_RANCH, "combo4");
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id)
-    );
+    // this.id = url[0].params.id;
+    const id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_EQUIPMENT_BASE + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_EQUIPMENT_BASE + "/" + id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization);
-        $$("combo2").setValue(data.json().clsDepartByIdDepart);
-        $$("combo3").setValue(data.json().clsDistrictByIdDistrict);
-        $$("combo4").setValue(data.json().clsRanchByIdRanch);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
+        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization.id);
+        $$("combo2").setValue(data.json().clsDepartByIdDepart.id);
+        $$("combo3").setValue(data.json().clsDistrictByIdDistrict.id);
+        $$("combo4").setValue(data.json().clsRanchByIdRanch.id);
       });
-  }
-
-  saveRow() {
-    const urlPost = ROOT_URL + CLS_EQUIPMENT_BASE + ACTION_CREATE;
-    const url1 = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
-    const url2 = ROOT_URL + CLS_DEPART + "/" + $$("combo2").getValue();
-    const url3 = ROOT_URL + CLS_DISTRICT + "/" + $$("combo3").getValue();
-    const url4 = ROOT_URL + CLS_RANCH + "/" + $$("combo4").getValue();
-
-    let item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue()
-    };
-
-    webix
-      .ajax()
-      .get(url1)
-      .then(data => {
-        item.clsOrganizationByIdOrganization = data.json();
-
-        webix
-          .ajax()
-          .get(url2)
-          .then(data => {
-            item.clsDepartByIdDepart = data.json();
-
-            webix
-              .ajax()
-              .get(url3)
-              .then(data => {
-                item.clsDistrictByIdDistrict = data.json();
-
-                webix
-                  .ajax()
-                  .get(url4)
-                  .then(data => {
-                    item.clsRanchByIdRanch = data.json();
-
-                    webix
-                      .ajax()
-                      .headers({
-                        "Content-Type": "application/json"
-                      })
-                      .post(urlPost, item)
-                      .then(data => this.setBlank());
-                  });
-              });
-          });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_EQUIPMENT_BASE + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_EQUIPMENT_BASE + "/" + id;
-    const url1 = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
-    const url2 = ROOT_URL + CLS_DEPART + "/" + $$("combo2").getValue();
-    const url3 = ROOT_URL + CLS_DISTRICT + "/" + $$("combo3").getValue();
-    const url4 = ROOT_URL + CLS_RANCH + "/" + $$("combo4").getValue();
-
-    let item;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
-
-        webix
-          .ajax()
-          .get(url1)
-          .then(data => {
-            item.clsOrganizationByIdOrganization = data.json();
-
-            webix
-              .ajax()
-              .get(url2)
-              .then(data => {
-                item.clsDepartByIdDepart = data.json();
-
-                webix
-                  .ajax()
-                  .get(url3)
-                  .then(data => {
-                    item.clsDistrictByIdDistrict = data.json();
-
-                    webix
-                      .ajax()
-                      .get(url4)
-                      .then(data => {
-                        item.clsRanchByIdRanch = data.json();
-
-                        webix
-                          .ajax()
-                          .headers({
-                            "Content-Type": "application/json"
-                          })
-                          .put(urlPut, item)
-                          .then(data => this.setBlank());
-                      });
-                  });
-              });
-          });
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_EQUIPMENT_BASE + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
-    $$("combo1").setValue("");
-    $$("combo2").setValue("");
-    $$("combo3").setValue("");
-    $$("combo4").setValue("");
   }
 }

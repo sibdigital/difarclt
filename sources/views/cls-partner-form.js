@@ -2,8 +2,6 @@ import { JetView } from "webix-jet";
 import {
   CLS_PARTNER,
   CLS_LEGAL_ENTITY,
-  FORM_NAME,
-  FORM_NUMBER,
   ACTION_CREATE,
   ACTION_UPDATE,
   ROOT_URL
@@ -36,8 +34,8 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             { view: "text", label: polyglot.t("inn"), id: "inn" },
             {
               view: "combo",
@@ -104,8 +102,8 @@ export default class DataView extends JetView {
       .ajax()
       .get(ROOT_URL + CLS_PARTNER + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
         $$("inn").setValue(data.json().inn);
         $$("combo1").setValue(data.json().clsLegalEntityByIdLegalEntity);
       });
@@ -116,8 +114,8 @@ export default class DataView extends JetView {
     const urlGet = ROOT_URL + CLS_LEGAL_ENTITY + "/" + $$("combo1").getValue();
 
     let item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue(),
+      name: $$("name").getValue(),
+      number: $$("number").getValue(),
       inn: $$("inn").getValue()
     };
 
@@ -149,8 +147,8 @@ export default class DataView extends JetView {
       .get(urlGet)
       .then(data => {
         item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
+        item.name = $$("name").getValue();
+        item.number = $$("number").getValue();
         item.inn = $$("inn").getValue();
       })
       .then(() => {
@@ -180,8 +178,8 @@ export default class DataView extends JetView {
   }
 
   setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
+    $$("name").setValue("");
+    $$("number").setValue("");
     $$("inn").setValue("");
     $$("combo1").setValue("");
   }

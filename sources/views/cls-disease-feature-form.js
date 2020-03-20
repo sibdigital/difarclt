@@ -1,12 +1,6 @@
 import { JetView } from "webix-jet";
-import {
-  CLS_DISEASE_FEATURE,
-  FORM_NAME,
-  FORM_CODE,
-  FORM_NUMBER,
-  ROOT_URL
-} from "~/util/constants.js";
-import { saveRow, deleteRow, updateRow } from "~/util/table-operations.js";
+import { CLS_DISEASE_FEATURE, ROOT_URL } from "~/util/constants.js";
+import { saveRow, deleteRow, updateRow } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
 export default class DataView extends JetView {
@@ -35,9 +29,9 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("code"), id: FORM_CODE },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("code"), id: "code" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             {
               margin: 5,
               cols: [
@@ -83,9 +77,9 @@ export default class DataView extends JetView {
       .ajax()
       .get(ROOT_URL + CLS_DISEASE_FEATURE + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
-        $$(FORM_CODE).setValue(data.json().code);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
+        $$("code").setValue(data.json().code);
       });
   }
 }

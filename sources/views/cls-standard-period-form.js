@@ -3,9 +3,7 @@ import {
   ROOT_URL,
   CLS_STANDARD_PERIOD,
   ACTION_CREATE,
-  ACTION_UPDATE,
-  FORM_NAME,
-  FORM_NUMBER
+  ACTION_UPDATE
 } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
 
@@ -35,8 +33,8 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             {
               view: "text",
               label: polyglot.t("period_type"),
@@ -97,8 +95,8 @@ export default class DataView extends JetView {
       .ajax()
       .get(ROOT_URL + CLS_STANDARD_PERIOD + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
         $$("period_type").setValue(data.json().periodType);
         $$("date_begin").setValue(data.json().dateBegin);
         $$("date_end").setValue(data.json().dateEnd);
@@ -109,8 +107,8 @@ export default class DataView extends JetView {
     const format = webix.Date.dateToStr("%Y-%m-%d");
     const url = ROOT_URL + CLS_STANDARD_PERIOD + ACTION_CREATE;
     const item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue(),
+      name: $$("name").getValue(),
+      number: $$("number").getValue(),
       periodType: $$("period_type").getValue(),
       dateBegin: format($$("date_begin").getValue()),
       dateEnd: format($$("date_end").getValue())
@@ -135,8 +133,8 @@ export default class DataView extends JetView {
       .get(urlGet)
       .then(data => {
         const item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
+        item.name = $$("name").getValue();
+        item.number = $$("number").getValue();
         item.periodType = $$("period_type").getValue();
         item.dateBegin = format($$("date_begin").getValue());
         item.dateEnd = format($$("date_end").getValue());
@@ -160,8 +158,8 @@ export default class DataView extends JetView {
   }
 
   setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
+    $$("name").setValue("");
+    $$("number").setValue("");
     $$("period_type").setValue("");
     $$("date_begin").setValue("");
     $$("date_end").setValue("");

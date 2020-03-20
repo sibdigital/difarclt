@@ -4,17 +4,21 @@ import {
   CLS_ORGANIZATION,
   CLS_STANDARD_PERIOD,
   CLS_DISTRICT,
-  CLS_REGION,
-  FORM_NAME,
-  FORM_NUMBER,
-  ACTION_CREATE,
-  ACTION_UPDATE
+  CLS_REGION
 } from "~/util/constants.js";
 import { ROOT_URL } from "~/util/constants.js";
+import {
+  saveRow,
+  updateRow,
+  deleteRow,
+  fillCombo,
+  setDependency
+} from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class ArbitraryPeriodFormView extends JetView {
   config() {
+    this.item = {};
     return {
       rows: [
         {
@@ -39,10 +43,10 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
-            { view: "text", placeholder: "Begin age", id: "begin_age" },
-            { view: "text", placeholder: "End age", id: "end_age" },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
+            { view: "text", label: polyglot.t("begin_age"), id: "begin_age" },
+            { view: "text", label: polyglot.t("end_age"), id: "end_age" },
             {
               view: "combo",
               id: "combo1",
@@ -73,17 +77,20 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_ARBITRARY_PERIOD, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_ARBITRARY_PERIOD, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_ARBITRARY_PERIOD, this.item)
                 }
               ]
             }
@@ -94,29 +101,63 @@ export default class DataView extends JetView {
   }
 
   init() {
-    this.fillCombo(CLS_ORGANIZATION, "combo1");
-    this.fillCombo(CLS_STANDARD_PERIOD, "combo2");
-    this.fillCombo(CLS_DISTRICT, "combo3");
-    this.fillCombo(CLS_REGION, "combo4");
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
+
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("begin_age").attachEvent("onChange", value => {
+      this.item.beginAge = value;
+    });
+
+    $$("end_age").attachEvent("onChange", value => {
+      this.item.endAge = value;
+    });
+
+    $$("combo1").attachEvent("onChange", value => {
+      setDependency(
+        CLS_ORGANIZATION,
+        value,
+        this.item,
+        "clsOrganizationByIdOrganization"
+      );
+    });
+
+    $$("combo2").attachEvent("onChange", value => {
+      setDependency(
+        CLS_STANDARD_PERIOD,
+        value,
+        this.item,
+        "clsStandardPeriodByIdStandardPeriod"
+      );
+    });
+
+    $$("combo3").attachEvent("onChange", value => {
+      setDependency(CLS_DISTRICT, value, this.item, "clsDistrictByIdDistrict");
+    });
+
+    $$("combo4").attachEvent("onChange", value => {
+      setDependency(CLS_REGION, value, this.item, "clsRegionByIdRegion");
+    });
+
+    fillCombo(CLS_ORGANIZATION, "combo1");
+    fillCombo(CLS_STANDARD_PERIOD, "combo2");
+    fillCombo(CLS_DISTRICT, "combo3");
+    fillCombo(CLS_REGION, "combo4");
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_ARBITRARY_PERIOD + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_ARBITRARY_PERIOD + "/" + this.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
         $$("begin_age").setValue(data.json().beginAge);
         $$("end_age").setValue(data.json().endAge);
         $$("combo1").setValue(data.json().clsOrganizationByIdOrganization.id);
@@ -126,149 +167,5 @@ export default class DataView extends JetView {
         $$("combo3").setValue(data.json().clsDistrictByIdDistrict.id);
         $$("combo4").setValue(data.json().clsRegionByIdRegion.id);
       });
-  }
-
-  fillCombo(entity, combo) {
-    webix
-      .ajax()
-      .get(ROOT_URL + entity)
-      .then(data => {
-        const list = $$(combo)
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-  }
-
-  saveRow() {
-    const urlPost = ROOT_URL + CLS_ARBITRARY_PERIOD + ACTION_CREATE;
-    const url1 = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
-    const url2 = ROOT_URL + CLS_STANDARD_PERIOD + "/" + $$("combo2").getValue();
-    const url3 = ROOT_URL + CLS_DISTRICT + "/" + $$("combo3").getValue();
-    const url4 = ROOT_URL + CLS_REGION + "/" + $$("combo4").getValue();
-
-    let item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue()
-    };
-
-    webix
-      .ajax()
-      .get(url1)
-      .then(data => {
-        item.clsOrganizationByIdOrganization = data.json();
-
-        webix
-          .ajax()
-          .get(url2)
-          .then(data => {
-            item.clsStandardPeriodByIdStandardPeriod = data.json();
-
-            webix
-              .ajax()
-              .get(url3)
-              .then(data => {
-                item.clsDistrictByIdDistrict = data.json();
-
-                webix
-                  .ajax()
-                  .get(url4)
-                  .then(data => {
-                    item.clsRegionByIdRegion = data.json();
-
-                    webix
-                      .ajax()
-                      .headers({
-                        "Content-Type": "application/json"
-                      })
-                      .post(urlPost, item)
-                      .then(data => this.setBlank());
-                  });
-              });
-          });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_ARBITRARY_PERIOD + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_ARBITRARY_PERIOD + "/" + id;
-    const url1 = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
-    const url2 = ROOT_URL + CLS_STANDARD_PERIOD + "/" + $$("combo2").getValue();
-    const url3 = ROOT_URL + CLS_DISTRICT + "/" + $$("combo3").getValue();
-    const url4 = ROOT_URL + CLS_REGION + "/" + $$("combo4").getValue();
-
-    let item;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
-
-        webix
-          .ajax()
-          .get(url1)
-          .then(data => {
-            item.clsOrganizationByIdOrganization = data.json();
-
-            webix
-              .ajax()
-              .get(url2)
-              .then(data => {
-                item.clsStandardPeriodByIdStandardPeriod = data.json();
-
-                webix
-                  .ajax()
-                  .get(url3)
-                  .then(data => {
-                    item.clsDistrictByIdDistrict = data.json();
-
-                    webix
-                      .ajax()
-                      .get(url4)
-                      .then(data => {
-                        item.clsRegionByIdRegion = data.json();
-
-                        webix
-                          .ajax()
-                          .headers({
-                            "Content-Type": "application/json"
-                          })
-                          .put(urlPut, item)
-                          .then(data => this.setBlank());
-                      });
-                  });
-              });
-          });
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_ARBITRARY_PERIOD + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
-    $$("combo1").setValue("");
-    $$("combo2").setValue("");
-    $$("combo3").setValue("");
-    $$("combo4").setValue("");
   }
 }

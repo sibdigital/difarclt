@@ -1,8 +1,6 @@
 import { JetView } from "webix-jet";
 import {
   CLS_TYPE_ANIMAL_EVENT,
-  FORM_NAME,
-  FORM_NUMBER,
   ACTION_CREATE,
   ACTION_UPDATE,
   ROOT_URL
@@ -35,8 +33,8 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             {
               margin: 5,
               cols: [
@@ -78,8 +76,8 @@ export default class DataView extends JetView {
       .ajax()
       .get(ROOT_URL + CLS_TYPE_ANIMAL_EVENT + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
       });
   }
 
@@ -93,15 +91,15 @@ export default class DataView extends JetView {
   }
 
   setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
+    $$("name").setValue("");
+    $$("number").setValue("");
   }
 
   saveRow() {
     const url = ROOT_URL + CLS_TYPE_ANIMAL_EVENT + ACTION_CREATE;
     const item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue()
+      name: $$("name").getValue(),
+      number: $$("number").getValue()
     };
 
     webix
@@ -122,8 +120,8 @@ export default class DataView extends JetView {
       .get(urlGet)
       .then(data => {
         const item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
+        item.name = $$("name").getValue();
+        item.number = $$("number").getValue();
 
         webix
           .ajax()

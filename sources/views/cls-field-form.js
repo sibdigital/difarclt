@@ -1,17 +1,22 @@
 import { JetView } from "webix-jet";
+import { CLS_FIELD, CLS_ORGANIZATION, ROOT_URL } from "~/util/constants";
+import { polyglot } from "jet-locales/ru";
 import {
-  CLS_FIELD,
-  CLS_ORGANIZATION,
-  FORM_NAME,
-  FORM_NUMBER,
-  ACTION_CREATE,
-  ACTION_UPDATE,
-  ROOT_URL
-} from "~/util/constants.js";
-import { polyglot } from "jet-locales/ru.js";
+  fillCombo,
+  setDependency,
+  saveRow,
+  deleteRow,
+  updateRow
+} from "~/util/api";
 
-export default class DataView extends JetView {
+export default class FieldFormView extends JetView {
   config() {
+    this.item = {
+      name: "",
+      number: "",
+      clsOrganizationByIdOrganization: null
+    };
+
     return {
       rows: [
         {
@@ -36,13 +41,59 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("organization"),
-              options: {}
+              view: "text",
+              label: polyglot.t("name"),
+              id: "name"
+            },
+            {
+              view: "text",
+              label: polyglot.t("number"),
+              id: "number"
+            },
+            {
+              cols: [
+                {
+                  view: "combo",
+                  id: "combo1",
+                  label: polyglot.t("organization"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  id: "modal_open",
+                  width: 50,
+                  click: () => {
+                    webix.ui({
+                      view: "window",
+                      position: "center",
+                      height: 400,
+                      width: 400,
+                      close: true,
+                      modal: true,
+                      id: "mywin",
+                      // body: dt.config()
+                      body: {
+                        view: "datatable",
+                        columnWidth: 200,
+                        url: ROOT_URL + CLS_ORGANIZATION,
+                        select: true, //enables selection
+                        columns: [
+                          { id: "name", header: polyglot.t("name") },
+                          { id: "number", header: polyglot.t("number") }
+                        ],
+                        on: {
+                          onItemDblClick(id) {
+                            $$("combo1").setValue(id);
+                            $$("mywin").close();
+                          }
+                        }
+                      }
+                    });
+                    $$("mywin").show();
+                  }
+                }
+              ]
             },
             {
               margin: 5,
@@ -50,17 +101,20 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_FIELD, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_FIELD, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_FIELD, this.item)
                 }
               ]
             }
@@ -71,111 +125,36 @@ export default class DataView extends JetView {
   }
 
   init() {
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_ORGANIZATION)
-      .then(function(data) {
-        const list = $$("combo1")
-          .getPopup()
-          .getList();
-        const values = [];
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
 
-        list.clearAll();
-        list.parse(values);
-      });
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("combo1").attachEvent("onChange", value => {
+      setDependency(
+        CLS_ORGANIZATION,
+        value,
+        this.item,
+        "clsOrganizationByIdOrganization"
+      );
+    });
+
+    fillCombo(CLS_ORGANIZATION, "combo1");
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_FIELD + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_FIELD + "/" + this.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
         $$("combo1").setValue(data.json().clsOrganizationByIdOrganization.id);
       });
-  }
-
-  saveRow() {
-    const urlPost = ROOT_URL + CLS_FIELD + ACTION_CREATE;
-    const urlGet = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
-
-    let item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue()
-    };
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item.clsOrganizationByIdOrganization = data.json();
-
-        webix
-          .ajax()
-          .headers({
-            "Content-Type": "application/json"
-          })
-          .post(urlPost, item)
-          .then(data => this.setBlank());
-      });
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_FIELD + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_FIELD + "/" + id;
-    const urlOrg = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
-    let item;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
-
-        webix
-          .ajax()
-          .get(urlOrg)
-          .then(data => {
-            item.clsOrganizationByIdOrganization = data.json();
-
-            webix
-              .ajax()
-              .headers({
-                "Content-Type": "application/json"
-              })
-              .put(urlPut, item)
-              .then(data => this.setBlank());
-          });
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_FIELD + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
-    $$("combo1").setValue("");
   }
 }

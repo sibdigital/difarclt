@@ -13,6 +13,7 @@ export default class DataView extends JetView {
           on: {
             onTimedKeyPress: function() {
               const value = this.getValue().toLowerCase();
+
               if (!value) {
                 $$("table").filter();
               } else {

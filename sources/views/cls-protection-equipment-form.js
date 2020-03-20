@@ -2,9 +2,6 @@ import { JetView } from "webix-jet";
 import {
   CLS_PROTECTION_EQUIPMENT,
   CLS_UNIT,
-  FORM_NAME,
-  FORM_NUMBER,
-  FORM_CODE,
   ACTION_CREATE,
   ACTION_UPDATE,
   ROOT_URL
@@ -37,9 +34,9 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
-            { view: "text", label: polyglot.t("code"), id: FORM_CODE },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
+            { view: "text", label: polyglot.t("code"), id: "code" },
             { view: "text", label: polyglot.t("max_consum"), id: "max_consum" },
             { view: "text", label: polyglot.t("mix_consum"), id: "min_consum" },
             {
@@ -108,9 +105,9 @@ export default class DataView extends JetView {
       .ajax()
       .get(ROOT_URL + CLS_PROTECTION_EQUIPMENT + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
-        $$(FORM_CODE).setValue(data.json().code);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
+        $$("code").setValue(data.json().code);
         $$("max_consum").setValue(data.json().maxConsum);
         $$("min_consum").setValue(data.json().minConsum);
         $$("combo1").setValue(data.json().clsUnitByIdUnit.id);
@@ -122,9 +119,9 @@ export default class DataView extends JetView {
     const urlGet = ROOT_URL + CLS_UNIT + "/" + $$("combo1").getValue();
 
     let item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue(),
-      code: $$(FORM_CODE).getValue(),
+      name: $$("name").getValue(),
+      number: $$("number").getValue(),
+      code: $$("code").getValue(),
       maxConsum: $$("max_consum").getValue(),
       minConsum: $$("min_consum").getValue()
     };
@@ -158,9 +155,9 @@ export default class DataView extends JetView {
       .get(urlGet)
       .then(data => {
         item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
-        item.code = $$(FORM_CODE).getValue();
+        item.name = $$("name").getValue();
+        item.number = $$("number").getValue();
+        item.code = $$("code").getValue();
         item.maxConsum = $$("max_consum").getValue();
         item.minConsum = $$("min_consum").getValue();
       })
@@ -191,9 +188,9 @@ export default class DataView extends JetView {
   }
 
   setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
-    $$(FORM_CODE).setValue("");
+    $$("name").setValue("");
+    $$("number").setValue("");
+    $$("code").setValue("");
     $$("combo1").setValue("");
     $$("max_consum").setValue("");
     $$("min_consum").setValue("");

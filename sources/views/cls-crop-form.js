@@ -1,22 +1,18 @@
 import { JetView } from "webix-jet";
-import {
-  CLS_CROP,
-  FORM_NAME,
-  FORM_CODE,
-  FORM_NUMBER,
-  ROOT_URL
-} from "~/util/constants.js";
-import { saveRow, deleteRow, updateRow } from "~/util/table-operations.js";
+import { CLS_CROP, ROOT_URL } from "~/util/constants.js";
+import { saveRow, deleteRow, updateRow } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
 export default class DataView extends JetView {
   config() {
+    this.item = new webix.DataRecord({
+      name: "11",
+      code: "22",
+      number: "33"
+    });
+
     return {
       rows: [
-        {
-          view: "window",
-          modal: true
-        },
         {
           view: "toolbar",
           elements: [
@@ -37,18 +33,34 @@ export default class DataView extends JetView {
         },
         {
           view: "form",
-          id: "form",
+          id: "f1",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("code"), id: FORM_CODE },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            {
+              view: "text",
+              label: polyglot.t("name"),
+              id: "name"
+            },
+            {
+              view: "text",
+              label: polyglot.t("code"),
+              id: "code"
+            },
+            {
+              view: "text",
+              label: polyglot.t("number"),
+              id: "number"
+            },
             {
               margin: 5,
               cols: [
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => {
+                    console.log(this.id);
+                    // saveRow(CLS_CROP, this.item);
+                  }
                 },
                 {
                   view: "button",
@@ -68,26 +80,18 @@ export default class DataView extends JetView {
     };
   }
 
-  init() {}
-
-  urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => saveRow.call(this, CLS_CROP));
-
-    $$("delete").attachEvent("onItemClick", () =>
-      deleteRow.call(this, url[0].params.id, CLS_CROP)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      updateRow.call(this, url[0].params.id, CLS_CROP)
-    );
-
+  init() {
     webix
       .ajax()
-      .get(ROOT_URL + CLS_CROP + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_CROP + "/" + this.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
-        $$(FORM_CODE).setValue(data.json().code);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
+        $$("code").setValue(data.json().code);
       });
+  }
+
+  urlChange(view, url) {
+    this.id = url[0].params.id;
   }
 }

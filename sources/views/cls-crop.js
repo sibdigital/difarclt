@@ -33,7 +33,7 @@ export default class DataView extends JetView {
           select: true, //enables selection
           columns: [
             { id: "name", header: polyglot.t("name") },
-            { id: "number", header: polyglot.t("number") }
+            { id: "numner", header: polyglot.t("number") }
           ],
           pager: "pager"
         },

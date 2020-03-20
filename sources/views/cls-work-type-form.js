@@ -1,9 +1,6 @@
 import { JetView } from "webix-jet";
 import {
   CLS_WORK_TYPE,
-  FORM_NAME,
-  FORM_CODE,
-  FORM_NUMBER,
   ACTION_CREATE,
   ACTION_UPDATE,
   ROOT_URL
@@ -36,8 +33,8 @@ export default class DataView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: FORM_NAME },
-            { view: "text", label: polyglot.t("number"), id: FORM_NUMBER },
+            { view: "text", label: polyglot.t("name"), id: "name" },
+            { view: "text", label: polyglot.t("number"), id: "number" },
             {
               view: "combo",
               id: "combo1",
@@ -103,8 +100,8 @@ export default class DataView extends JetView {
       .ajax()
       .get(ROOT_URL + CLS_WORK_TYPE + "/" + url[0].params.id)
       .then(data => {
-        $$(FORM_NAME).setValue(data.json().name);
-        $$(FORM_NUMBER).setValue(data.json().number);
+        $$("name").setValue(data.json().name);
+        $$("number").setValue(data.json().number);
       });
   }
 
@@ -112,8 +109,8 @@ export default class DataView extends JetView {
     const urlPost = ROOT_URL + CLS_WORK_TYPE + ACTION_CREATE;
 
     let item = {
-      name: $$(FORM_NAME).getValue(),
-      number: $$(FORM_NUMBER).getValue(),
+      name: $$("name").getValue(),
+      number: $$("number").getValue(),
       idParent: $$("combo1").getValue(),
       parentPath: "00000"
     };
@@ -138,8 +135,8 @@ export default class DataView extends JetView {
       .get(urlGet)
       .then(data => {
         item = data.json();
-        item.name = $$(FORM_NAME).getValue();
-        item.number = $$(FORM_NUMBER).getValue();
+        item.name = $$("name").getValue();
+        item.number = $$("number").getValue();
         item.idParent = $$("combo1").getValue();
         item.parentPath = "00000";
 
@@ -162,9 +159,9 @@ export default class DataView extends JetView {
   }
 
   setBlank() {
-    $$(FORM_NAME).setValue("");
-    $$(FORM_NUMBER).setValue("");
-    $$(FORM_CODE).setValue("");
+    $$("name").setValue("");
+    $$("number").setValue("");
+    $$("code").setValue("");
     $$("combo1").setValue("");
   }
 }
