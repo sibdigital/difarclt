@@ -3,7 +3,7 @@ import { CLS_ANIMAL_GROUP_KIND, ROOT_URL } from "~/util/constants.js";
 import { saveRow, deleteRow, updateRow } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class AnimalGroupKindView extends JetView {
+export default class AnimalGroupKindFormView extends JetView {
   config() {
     this.item = {};
     return {
@@ -52,7 +52,8 @@ export default class AnimalGroupKindView extends JetView {
                   view: "button",
                   value: polyglot.t("update"),
                   id: "update",
-                  click: () => updateRow(CLS_ANIMAL_GROUP_KIND, this.item)
+                  click: () =>
+                    updateRow(CLS_ANIMAL_GROUP_KIND, this.item, this.id)
                 }
               ]
             }
@@ -78,7 +79,6 @@ export default class AnimalGroupKindView extends JetView {
 
   urlChange(view, url) {
     this.id = url[0].params.id;
-
     webix
       .ajax()
       .get(ROOT_URL + CLS_ANIMAL_GROUP_KIND + "/" + this.id)

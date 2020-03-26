@@ -3,8 +3,9 @@ import { CLS_REGION, ROOT_URL } from "~/util/constants.js";
 import { saveRow, deleteRow, updateRow } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class RegionFormView extends JetView {
   config() {
+    this.id = {};
     return {
       rows: [
         {
@@ -42,17 +43,20 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_REGION, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_REGION, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_REGION, this.item, this.id)
                 }
               ]
             }
@@ -62,22 +66,26 @@ export default class DataView extends JetView {
     };
   }
 
-  init() {}
+  init() {
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
+
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("code").attachEvent("onChange", value => {
+      this.item.code = value;
+    });
+  }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => saveRow.call(this, CLS_REGION));
-
-    $$("delete").attachEvent("onItemClick", () =>
-      deleteRow.call(this, url[0].params.id, CLS_REGION)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      updateRow.call(this, url[0].params.id, CLS_REGION)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_REGION + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_REGION + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);

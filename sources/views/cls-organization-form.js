@@ -2,12 +2,11 @@ import { JetView } from "webix-jet";
 import {
   CLS_ORGANIZATION,
   CLS_LEGAL_ENTITY,
-  ACTION_CREATE,
-  ACTION_UPDATE,
   ROOT_URL
 } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
-import { saveRow, deleteRow, updateRow } from "../util/api";
+import { saveRow, deleteRow, updateRow } from "~/util/api";
+import { LegalEntityWindow } from "~/util/modal";
 
 export default class OrganizationView extends JetView {
   config() {
@@ -41,11 +40,24 @@ export default class OrganizationView extends JetView {
             { view: "text", label: polyglot.t("number"), id: "number" },
             { view: "text", label: polyglot.t("inn"), id: "inn" },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("legal_entity"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "legal_entity_combo",
+                  label: polyglot.t("legal_entity"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(LegalEntityWindow);
+                    $$("legal_entity_win").show();
+                  }
+                }
+              ]
             },
+
             {
               margin: 5,
               cols: [
@@ -84,16 +96,16 @@ export default class OrganizationView extends JetView {
       this.item.number = value;
     });
 
-    $$("combo1").attachEvent("onChange", value => {
+    $$("legal_entity_combo").attachEvent("onChange", value => {
       setDependency(
-        CLS_ORGANIZATION,
+        CLS_LEGAL_ENTITY,
         value,
         this.item,
-        "clsOrganizationByIdOrganization"
+        "clsLegalEntityByIdLegalEntity"
       );
     });
 
-    fillCombo(CLS_ORGANIZATION, "combo1");
+    fillCombo(CLS_LEGAL_ENTITY, "legal_entity_combo");
   }
 
   urlChange(view, url) {
@@ -101,12 +113,14 @@ export default class OrganizationView extends JetView {
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_ORGANIZATION + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_ORGANIZATION + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
         $$("inn").setValue(data.json().inn);
-        $$("combo1").setValue(data.json().clsLegalEntityByIdLegalEntity.id);
+        $$("legal_entity_combo").setValue(
+          data.json().clsLegalEntityByIdLegalEntity.id
+        );
       });
   }
 }

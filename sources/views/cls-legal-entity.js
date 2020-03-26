@@ -2,7 +2,7 @@ import { JetView } from "webix-jet";
 import { ROOT_URL, CLS_LEGAL_ENTITY } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class LegalEntityView extends JetView {
   config() {
     return {
       rows: [

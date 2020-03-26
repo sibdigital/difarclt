@@ -39,7 +39,8 @@ polyglot.extend({
   organization: "Организация",
   legal_entity: "Юридическое лицо",
   standard_period: "Стандартный период",
+  separate: "Раздельный",
   ranch: "Ферма",
   region: "Регион",
-  unit: "Единица измерения",
+  unit: "Единица измерения"
 });

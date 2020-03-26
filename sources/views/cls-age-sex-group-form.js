@@ -3,7 +3,7 @@ import { ROOT_URL, CLS_AGE_SEX_GROUP } from "~/util/constants.js";
 import { saveRow, deleteRow, updateRow } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class AgeSexGroupView extends JetView {
+export default class AgeSexGroupFormView extends JetView {
   config() {
     this.item = {};
     return {
@@ -63,7 +63,7 @@ export default class AgeSexGroupView extends JetView {
                   view: "button",
                   value: polyglot.t("update"),
                   id: "update",
-                  click: () => updateRow(CLS_AGE_SEX_GROUP, this.item)
+                  click: () => updateRow(CLS_AGE_SEX_GROUP, this.item, this.id)
                 }
               ]
             }
@@ -91,7 +91,7 @@ export default class AgeSexGroupView extends JetView {
     this.id = url[0].params.id;
     webix
       .ajax()
-      .get(ROOT_URL + CLS_AGE_SEX_GROUP + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_AGE_SEX_GROUP + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);

@@ -3,7 +3,7 @@ import { ROOT_URL, CLS_ANIMAL_PARAM_KIND } from "~/util/constants.js";
 import { saveRow, deleteRow, updateRow } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class AnimalParamKindView extends JetView {
+export default class AnimalParamKindFormView extends JetView {
   config() {
     this.item = {};
     return {
@@ -52,7 +52,8 @@ export default class AnimalParamKindView extends JetView {
                   view: "button",
                   value: polyglot.t("update"),
                   id: "update",
-                  click: () => updateRow(CLS_ANIMAL_PARAM_KIND, this.item)
+                  click: () =>
+                    updateRow(CLS_ANIMAL_PARAM_KIND, this.item, this.id)
                 }
               ]
             }
@@ -80,7 +81,7 @@ export default class AnimalParamKindView extends JetView {
     this.url = url[0].params.id;
     webix
       .ajax()
-      .get(ROOT_URL + CLS_ANIMAL_PARAM_KIND + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_ANIMAL_PARAM_KIND + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);

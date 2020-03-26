@@ -3,13 +3,12 @@ import {
   CLS_USER,
   CLS_ORGANIZATION,
   CLS_EMPLOYEE,
-  ACTION_CREATE,
-  ACTION_UPDATE,
   ROOT_URL
 } from "~/util/constants.js";
+import { OrganizationWindow, EmployeeWindow } from "~/util/modal";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class UserFormView extends JetView {
   config() {
     return {
       rows: [
@@ -39,16 +38,40 @@ export default class DataView extends JetView {
             { view: "text", label: polyglot.t("number"), id: "number" },
             { view: "text", label: polyglot.t("password"), id: "password" },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("organization"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "organization_combo",
+                  label: polyglot.t("organization"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(OrganizationWindow);
+                    $$("organization_win").show();
+                  }
+                }
+              ]
             },
             {
-              view: "combo",
-              id: "combo2",
-              label: polyglot.t("employee"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "employee_combo",
+                  label: polyglot.t("employee"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(EmployeeWindow);
+                    $$("employee_win").show();
+                  }
+                }
+              ]
             },
             {
               margin: 5,
@@ -56,17 +79,20 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_USER, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_USER, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_USER, this.item, this.id)
                 }
               ]
             }
@@ -76,140 +102,50 @@ export default class DataView extends JetView {
     };
   }
 
-  fillCombo(entity, combo) {
-    webix
-      .ajax()
-      .get(ROOT_URL + entity)
-      .then(data => {
-        const list = $$(combo)
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-  }
-
   init() {
-    this.fillCombo(CLS_ORGANIZATION, "combo1");
-    this.fillCombo(CLS_EMPLOYEE, "combo2");
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
+
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("password").attachEvent("onChange", value => {
+      this.item.password = value;
+    });
+
+    $$("organization_combo").attachEvent("onChange", value => {
+      setDependency(
+        CLS_ORGANIZATION,
+        value,
+        this.item,
+        "clsOrganizationByIdOrganization"
+      );
+    });
+
+    $$("employee_combo").attachEvent("onChange", value => {
+      setDependency(CLS_EMPLOYEE, value, this.item, "clsEmployeeByIdEmployee");
+    });
+
+    fillCombo(CLS_ORGANIZATION, "organization_combo");
+    fillCombo(CLS_EMPLOYEE, "employee_combo");
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_USER + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_USER + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
         $$("password").setValue(data.json().password);
-        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization.id);
-        $$("combo2").setValue(data.json().clsEmployeeByIdEmployee.id);
+        $$("organization_combo").setValue(
+          data.json().clsOrganizationByIdOrganization.id
+        );
+        $$("employee_combo").setValue(data.json().clsEmployeeByIdEmployee.id);
       });
-  }
-
-  saveRow() {
-    const urlPost = ROOT_URL + CLS_USER + ACTION_CREATE;
-    const url1 = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
-    const url2 = ROOT_URL + CLS_EMPLOYEE + "/" + $$("combo2").getValue();
-
-    let item = {
-      name: $$("name").getValue(),
-      number: $$("number").getValue(),
-      password: $$("password").getValue()
-    };
-
-    webix
-      .ajax()
-      .get(url1)
-      .then(data => {
-        item.clsOrganizationByIdOrganization = data.json();
-
-        webix
-          .ajax()
-          .get(url2)
-          .then(data => {
-            item.clsEmployeeByIdEmployee = data.json();
-
-            webix
-              .ajax()
-              .headers({
-                "Content-Type": "application/json"
-              })
-              .post(urlPost, item)
-              .then(data => this.setBlank());
-          });
-      });
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_USER + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_USER + "/" + id;
-    const url1 = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo1").getValue();
-    const url2 = ROOT_URL + CLS_EMPLOYEE + "/" + $$("combo2").getValue();
-    let item;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item = data.json();
-        item.name = $$("name").getValue();
-        item.number = $$("number").getValue();
-        item.password = $$("password").getValue();
-
-        webix
-          .ajax()
-          .get(url1)
-          .then(data => {
-            item.clsOrganizationByIdOrganization = data.json();
-
-            webix
-              .ajax()
-              .get(url2)
-              .then(data => {
-                item.clsEmployeeByIdEmployee = data.json();
-
-                webix
-                  .ajax()
-                  .headers({
-                    "Content-Type": "application/json"
-                  })
-                  .put(urlPut, item)
-                  .then(data => this.setBlank());
-              });
-          });
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_USER + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$("name").setValue("");
-    $$("number").setValue("");
-    $$("combo1").setValue("");
-    $$("combo2").setValue("");
-    $$("password").setValue("");
   }
 }

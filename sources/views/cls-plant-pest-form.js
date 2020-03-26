@@ -1,15 +1,10 @@
 import { JetView } from "webix-jet";
-import {
-  CLS_PLANT_PEST,
-  CLS_UNIT,
-  ACTION_CREATE,
-  ACTION_UPDATE,
-  ROOT_URL
-} from "~/util/constants.js";
+import { CLS_PLANT_PEST, CLS_UNIT, ROOT_URL } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class PlantPestFormView extends JetView {
   config() {
+    this.item = {};
     return {
       rows: [
         {
@@ -48,10 +43,22 @@ export default class DataView extends JetView {
               id: "max_incub_period"
             },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("unit"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "unit_combo",
+                  label: polyglot.t("unit"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(UnitWindow);
+                    $$("unit_win").show();
+                  }
+                }
+              ]
             },
             {
               margin: 5,
@@ -59,17 +66,20 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_DISTRICT, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_DISTRICT, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_DISTRICT, this.item, this.id)
                 }
               ]
             }
@@ -80,126 +90,46 @@ export default class DataView extends JetView {
   }
 
   init() {
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_UNIT)
-      .then(function(data) {
-        const list = $$("combo1")
-          .getPopup()
-          .getList();
-        const values = [];
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
 
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
 
-        list.clearAll();
-        list.parse(values);
-      });
+    $$("code").attachEvent("onChange", value => {
+      this.item.code = value;
+    });
+
+    $$("min_incub_period").attachEvent("onChange", value => {
+      this.item.minIncubPeriod = value;
+    });
+
+    $$("max_incub_period").attachEvent("onChange", value => {
+      this.item.maxIncubPeriod = value;
+    });
+
+    $$("unit_combo").attachEvent("onChange", value => {
+      setDependency(CLS_UNIT, value, this.item, "clsUnitByIdUnit");
+    });
+
+    fillCombo(CLS_UNIT, "unit_combo");
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_PLANT_PEST + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_PLANT_PEST + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
         $$("code").setValue(data.json().code);
-        $$("min_incub_period").setValue(data.json().min_incub_period);
-        $$("max_incub_period").setValue(data.json().max_incub_period);
-        $$("combo1").setValue(data.json().clsUnitByIdUnit.id);
+        $$("min_incub_period").setValue(data.json().minIncubPeriod);
+        $$("max_incub_period").setValue(data.json().maxIncubPeriod);
+        $$("unit_combo").setValue(data.json().clsUnitByIdUnit.id);
       });
-  }
-
-  saveRow() {
-    const urlPost = ROOT_URL + CLS_PLANT_PEST + ACTION_CREATE;
-    const urlGet = ROOT_URL + CLS_UNIT + "/" + $$("combo1").getValue();
-
-    let item = {
-      name: $$("name").getValue(),
-      number: $$("number").getValue(),
-      code: $$("code").getValue(),
-      min_incub_period: $$("min_incub_period").getValue(),
-      max_incub_period: $$("max_incub_period").getValue()
-    };
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item.clsUnitByIdUnit = data.json();
-
-        webix
-          .ajax()
-          .headers({
-            "Content-Type": "application/json"
-          })
-          .post(urlPost, item)
-          .then(data => {
-            this.setBlank();
-          });
-      });
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_PLANT_PEST + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_PLANT_PEST + "/" + id;
-    const urlUnit = ROOT_URL + CLS_UNIT + "/" + $$("combo1").getValue();
-    let item;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item = data.json();
-        item.name = $$("name").getValue();
-        item.number = $$("number").getValue();
-        item.code = $$("code").getValue();
-        item.min_incub_period = $$("min_incub_period").getValue();
-        item.max_incub_period = $$("max_incub_period").getValue();
-
-        webix
-          .ajax()
-          .get(urlUnit)
-          .then(data => {
-            item.clsUnitByIdUnit = data.json();
-
-            webix
-              .ajax()
-              .headers({
-                "Content-Type": "application/json"
-              })
-              .put(urlPut, item)
-              .then(data => this.setBlank());
-          });
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_PLANT_PEST + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$("name").setValue("");
-    $$("number").setValue("");
-    $$("code").setValue("");
-    $$("min_incub_period").setValue();
-    $$("max_incub_period").setValue();
-    $$("combo1").setValue("");
   }
 }

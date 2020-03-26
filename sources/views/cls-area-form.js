@@ -8,8 +8,9 @@ import {
   updateRow
 } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
+import { DistrictWindow } from "~/util/modal";
 
-export default class DataView extends JetView {
+export default class AreaFormView extends JetView {
   config() {
     this.item = {};
     return {
@@ -39,11 +40,24 @@ export default class DataView extends JetView {
             { view: "text", label: polyglot.t("name"), id: "name" },
             { view: "text", label: polyglot.t("number"), id: "number" },
             {
-              view: "combo",
-              id: "combo1",
-              label: "district",
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "district_combo",
+                  label: "district",
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(DistrictWindow);
+                    $$("district_win").show();
+                  }
+                }
+              ]
             },
+
             {
               margin: 5,
               cols: [
@@ -63,7 +77,7 @@ export default class DataView extends JetView {
                   view: "button",
                   value: polyglot.t("update"),
                   id: "update",
-                  click: () => updateRow(CLS_AREA, this.item)
+                  click: () => updateRow(CLS_AREA, this.item, this.id)
                 }
               ]
             }
@@ -82,11 +96,11 @@ export default class DataView extends JetView {
       this.item.number = value;
     });
 
-    $$("combo1").attachEvent("onChange", value => {
+    $$("district_combo").attachEvent("onChange", value => {
       setDependency(CLS_DISTRICT, value, this.item, "clsDistrictByIdDistrict");
     });
 
-    fillCombo(CLS_DISTRICT, "combo1");
+    fillCombo(CLS_DISTRICT, "district_combo");
   }
 
   urlChange(view, url) {
@@ -98,7 +112,7 @@ export default class DataView extends JetView {
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsDistrictByIdDistrict.id);
+        $$("district_combo").setValue(data.json().clsDistrictByIdDistrict.id);
       });
   }
 }

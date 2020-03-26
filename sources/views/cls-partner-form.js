@@ -1,15 +1,11 @@
 import { JetView } from "webix-jet";
-import {
-  CLS_PARTNER,
-  CLS_LEGAL_ENTITY,
-  ACTION_CREATE,
-  ACTION_UPDATE,
-  ROOT_URL
-} from "~/util/constants.js";
+import { CLS_PARTNER, CLS_LEGAL_ENTITY, ROOT_URL } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
+import { LegalEntityWindow } from "~/util/modal";
 
-export default class DataView extends JetView {
+export default class PartnerView extends JetView {
   config() {
+    this.item = {};
     return {
       rows: [
         {
@@ -38,10 +34,22 @@ export default class DataView extends JetView {
             { view: "text", label: polyglot.t("number"), id: "number" },
             { view: "text", label: polyglot.t("inn"), id: "inn" },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("legal_entity"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "legal_entity_combo",
+                  label: polyglot.t("legal_entity"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(LegalEntityWindow);
+                    $$("legal_entity_win").show();
+                  }
+                }
+              ]
             },
             {
               margin: 5,
@@ -49,17 +57,20 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_PARTNER, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_PARTNER, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_PARTNER, this.item, this.id)
                 }
               ]
             }
@@ -70,117 +81,43 @@ export default class DataView extends JetView {
   }
 
   init() {
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_LEGAL_ENTITY)
-      .then(function(data) {
-        const list = $$("combo1")
-          .getPopup()
-          .getList();
-        const values = [];
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
 
-        list.clearAll();
-        list.parse(values);
-      });
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("inn").attachEvent("onChange", value => {
+      this.item.inn = value;
+    });
+
+    $$("legal_entity_combo").attachEvent("onChange", value => {
+      setDependency(
+        CLS_LEGAL_ENTITY,
+        value,
+        this.item,
+        "clsLegalEntityByIdLegalEntity"
+      );
+    });
+
+    fillCombo(CLS_LEGAL_ENTITY, "legal_entity_combo");
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_PARTNER + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_PARTNER + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
         $$("inn").setValue(data.json().inn);
-        $$("combo1").setValue(data.json().clsLegalEntityByIdLegalEntity);
+        $$("legal_entity_combo").setValue(
+          data.json().clsLegalEntityByIdLegalEntity.id
+        );
       });
-  }
-
-  saveRow() {
-    const urlPost = ROOT_URL + CLS_PARTNER + ACTION_CREATE;
-    const urlGet = ROOT_URL + CLS_LEGAL_ENTITY + "/" + $$("combo1").getValue();
-
-    let item = {
-      name: $$("name").getValue(),
-      number: $$("number").getValue(),
-      inn: $$("inn").getValue()
-    };
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item.clsLegalEntityByIdLegalEntity = data.json();
-
-        webix
-          .ajax()
-          .headers({
-            "Content-Type": "application/json"
-          })
-          .post(urlPost, item)
-          .then(data => this.setBlank());
-      });
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_PARTNER + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_PARTNER + "/" + id;
-    const urlCombo =
-      ROOT_URL + CLS_LEGAL_ENTITY + "/" + $$("combo1").getValue();
-    let item;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item = data.json();
-        item.name = $$("name").getValue();
-        item.number = $$("number").getValue();
-        item.inn = $$("inn").getValue();
-      })
-      .then(() => {
-        webix
-          .ajax()
-          .get(urlCombo)
-          .then(data => {
-            item.clsLegalEntityByIdLegalEntity = data.json();
-
-            webix
-              .ajax()
-              .headers({
-                "Content-Type": "application/json"
-              })
-              .put(urlPut, item)
-              .then(data => this.setBlank());
-          });
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_PARTNER + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$("name").setValue("");
-    $$("number").setValue("");
-    $$("inn").setValue("");
-    $$("combo1").setValue("");
   }
 }

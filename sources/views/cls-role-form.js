@@ -3,8 +3,9 @@ import { CLS_ROLE, ROOT_URL } from "~/util/constants.js";
 import { saveRow, deleteRow, updateRow } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class RoleView extends JetView {
   config() {
+    this.item = {};
     return {
       rows: [
         {
@@ -38,17 +39,20 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_ROLE, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_ROLE, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_ROLE, this.item, this.id)
                 }
               ]
             }
@@ -58,22 +62,26 @@ export default class DataView extends JetView {
     };
   }
 
-  init() {}
+  init() {
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
+
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("code").attachEvent("onChange", value => {
+      this.item.code = value;
+    });
+  }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => saveRow.call(this, CLS_ROLE));
-
-    $$("delete").attachEvent("onItemClick", () =>
-      deleteRow.call(this, url[0].params.id, CLS_ROLE)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      updateRow.call(this, url[0].params.id, CLS_ROLE)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_ROLE + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_ROLE + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);

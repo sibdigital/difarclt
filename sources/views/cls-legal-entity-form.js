@@ -1,14 +1,10 @@
 import { JetView } from "webix-jet";
-import {
-  ROOT_URL,
-  CLS_LEGAL_ENTITY,
-  ACTION_CREATE,
-  ACTION_UPDATE
-} from "~/util/constants.js";
+import { ROOT_URL, CLS_LEGAL_ENTITY } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class LegalEntityView extends JetView {
   config() {
+    this.item = {};
     return {
       rows: [
         {
@@ -42,17 +38,20 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_LEGAL_ENTITY, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_LEGAL_ENTITY, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_LEGAL_ENTITY, this.item, this.id)
                 }
               ]
             }
@@ -62,80 +61,30 @@ export default class DataView extends JetView {
     };
   }
 
-  init() {}
+  init() {
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
+
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("inn").attachEvent("onChange", value => {
+      this.item.inn = value;
+    });
+  }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id, CLS_LEGAL_ENTITY)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_LEGAL_ENTITY + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_LEGAL_ENTITY + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
         $$("inn").setValue(data.json().inn);
       });
-  }
-
-  saveRow() {
-    const url = ROOT_URL + CLS_LEGAL_ENTITY + ACTION_CREATE;
-    const item = {
-      name: $$("name").getValue(),
-      number: $$("number").getValue(),
-      inn: $$("inn").getValue()
-    };
-
-    webix
-      .ajax()
-      .headers({
-        "Content-Type": "application/json"
-      })
-      .post(url, item)
-      .then(data => this.setBlank());
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_LEGAL_ENTITY + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_LEGAL_ENTITY + "/" + id;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        const item = data.json();
-        item.name = $$("name").getValue();
-        item.number = $$("number").getValue();
-        item.inn = $$("inn").getValue();
-
-        webix
-          .ajax()
-          .headers({
-            "Content-Type": "application/json"
-          })
-          .put(urlPut, item)
-          .then(data => this.setBlank());
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_LEGAL_ENTITY + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$("name").setValue("");
-    $$("number").setValue("");
-    $$("inn").setValue();
   }
 }

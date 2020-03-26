@@ -8,8 +8,9 @@ import {
   updateRow
 } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
+import { KindAnimalWindow } from "~/util/modal";
 
-export default class DataView extends JetView {
+export default class BreedFormView extends JetView {
   config() {
     this.item = {};
     return {
@@ -39,10 +40,22 @@ export default class DataView extends JetView {
             { view: "text", label: polyglot.t("name"), id: "name" },
             { view: "text", label: polyglot.t("number"), id: "number" },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("animal_kind"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "kind_animal_combo",
+                  label: polyglot.t("animal_kind"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(KindAnimalWindow);
+                    $$("kind_animal_win").show();
+                  }
+                }
+              ]
             },
             {
               margin: 5,
@@ -63,7 +76,7 @@ export default class DataView extends JetView {
                   view: "button",
                   value: polyglot.t("update"),
                   id: "update",
-                  click: () => updateRow(CLS_BREED, this.item)
+                  click: () => updateRow(CLS_BREED, this.item, this.id)
                 }
               ]
             }
@@ -82,7 +95,7 @@ export default class DataView extends JetView {
       this.item.number = value;
     });
 
-    $$("combo1").attachEvent("onChange", value => {
+    $$("kind_animal_combo").attachEvent("onChange", value => {
       setDependency(
         CLS_KIND_ANIMAL,
         value,
@@ -91,7 +104,7 @@ export default class DataView extends JetView {
       );
     });
 
-    fillCombo(CLS_KIND_ANIMAL, "combo1");
+    fillCombo(CLS_KIND_ANIMAL, "kind_animal_combo");
   }
 
   urlChange(view, url) {
@@ -99,11 +112,13 @@ export default class DataView extends JetView {
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_BREED + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_BREED + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsKindAnimalByIdKindAnimal.id);
+        $$("kind_animal_combo").setValue(
+          data.json().clsKindAnimalByIdKindAnimal.id
+        );
       });
   }
 }

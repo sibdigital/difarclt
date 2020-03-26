@@ -2,7 +2,7 @@ import { JetView } from "webix-jet";
 import { ROOT_URL, CLS_ANIMAL_PARAM_KIND } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class AnimalParamKind extends JetView {
   config() {
     return {
       rows: [

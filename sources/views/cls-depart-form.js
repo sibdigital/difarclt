@@ -1,16 +1,23 @@
 import { JetView } from "webix-jet";
 import {
+  fillCombo,
+  setDependency,
+  saveRow,
+  deleteRow,
+  updateRow
+} from "~/util/api";
+import {
   CLS_DEPART,
   CLS_LEGAL_ENTITY,
   CLS_ORGANIZATION,
-  ACTION_CREATE,
-  ACTION_UPDATE,
   ROOT_URL
 } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
+import { LegalEntityWindow } from "../util/modal";
 
-export default class DataView extends JetView {
+export default class DepartFormView extends JetView {
   config() {
+    this.item = {};
     return {
       rows: [
         {
@@ -38,21 +45,45 @@ export default class DataView extends JetView {
             { view: "text", label: polyglot.t("name"), id: "name" },
             { view: "text", label: polyglot.t("number"), id: "number" },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("legal_entity"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "legal_entity_win",
+                  label: polyglot.t("legal_entity"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(LegalEntityWindow);
+                    $$("legal_entity_win").show();
+                  }
+                }
+              ]
             },
             {
-              view: "combo",
-              id: "combo2",
-              label: polyglot.t("organization"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "organization_combo",
+                  label: polyglot.t("organization"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(LegalEntityWindow);
+                    $$("organization_win").show();
+                  }
+                }
+              ]
             },
             {
               view: "checkbox",
               id: "separate",
-              label: "Separate",
+              label: polyglot.t("separate"),
               value: 0
             },
             {
@@ -61,17 +92,22 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_DEPART, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_DEPART, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => {
+                    updateRow(CLS_DEPART, this.item, this.id);
+                  }
                 }
               ]
             }
@@ -82,144 +118,56 @@ export default class DataView extends JetView {
   }
 
   init() {
-    this.fillCombo("combo1", CLS_LEGAL_ENTITY);
-    this.fillCombo("combo2", CLS_ORGANIZATION);
-  }
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
 
-  fillCombo(combo, entity) {
-    webix
-      .ajax()
-      .get(ROOT_URL + entity)
-      .then(data => {
-        const list = $$(combo)
-          .getPopup()
-          .getList();
-        const values = [];
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
 
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
+    $$("legal_entity_win").attachEvent("onChange", value => {
+      setDependency(
+        CLS_LEGAL_ENTITY,
+        value,
+        this.item,
+        "clsLegalEntityByIdLegalEntity"
+      );
+    });
 
-        list.clearAll();
-        list.parse(values);
-      });
+    $$("organization_combo").attachEvent("onChange", value => {
+      setDependency(
+        CLS_ORGANIZATION,
+        value,
+        this.item,
+        "clsOrganizationByIdOrganization"
+      );
+    });
+
+    $$("separate").attachEvent("onChange", value => {
+      this.item.separate = value;
+    });
+
+    fillCombo(CLS_LEGAL_ENTITY, "legal_entity_win");
+    fillCombo(CLS_ORGANIZATION, "organization_combo");
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_DEPART + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_DEPART + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsLegalEntityByIdLegalEntity.id);
-        $$("combo2").setValue(data.json().clsOrganizationByIdOrganization.id);
+        $$("legal_entity_win").setValue(
+          data.json().clsLegalEntityByIdLegalEntity.id
+        );
+        $$("organization_combo").setValue(
+          data.json().clsOrganizationByIdOrganization.id
+        );
         $$("separate").setValue(data.json().separate);
       });
-  }
-
-  saveRow() {
-    const urlPost = ROOT_URL + CLS_DEPART + ACTION_CREATE;
-    const url1 = ROOT_URL + CLS_LEGAL_ENTITY + "/" + $$("combo1").getValue();
-    const url2 = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo2").getValue();
-
-    let item = {
-      name: $$("name").getValue(),
-      number: $$("number").getValue(),
-      separate: $$("separate").getValue() == 1 ? true : false
-    };
-
-    webix
-      .ajax()
-      .get(url1)
-      .then(data => {
-        item.clsLegalEntityByIdLegalEntity = data.json();
-
-        webix
-          .ajax()
-          .get(url2)
-          .then(data => {
-            item.clsOrganizationByIdOrganization = data.json();
-
-            console.log(item);
-
-            webix
-              .ajax()
-              .headers({
-                "Content-Type": "application/json"
-              })
-              .post(urlPost, item)
-              .then(data => this.setBlank());
-          });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_DEPART + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_DEPART + "/" + id;
-    const url1 = ROOT_URL + CLS_LEGAL_ENTITY + "/" + $$("combo1").getValue();
-    const url2 = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo2").getValue();
-    let item;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item = data.json();
-        item.name = $$("name").getValue();
-        item.number = $$("number").getValue();
-        item.separate = $$("separate").getValue() == 1 ? "true" : "false";
-
-        webix
-          .ajax()
-          .get(url1)
-          .then(data => {
-            item.clsLegalEntityByIdLegalEntity = data.json();
-
-            webix
-              .ajax()
-              .get(url2)
-              .then(data => {
-                item.clsOrganizationByIdOrganization = data.json();
-
-                webix
-                  .ajax()
-                  .headers({
-                    "Content-Type": "application/json"
-                  })
-                  .put(urlPut, item)
-                  .then(data => this.setBlank());
-              });
-          });
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_DEPART + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$("name").setValue("");
-    $$("number").setValue("");
-    $$("combo1").setValue("");
-    $$("combo2").setValue("");
-    $$("separate").setValue(0);
   }
 }

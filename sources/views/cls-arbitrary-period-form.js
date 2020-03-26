@@ -14,7 +14,9 @@ import {
   fillCombo,
   setDependency
 } from "~/util/api";
-import { polyglot } from "jet-locales/ru.js";
+import { OrganizationWindow } from "~/util/modal";
+import { polyglot } from "jet-locales/ru";
+import { DistrictWindow, RegionalWindow } from "../util/modal";
 
 export default class ArbitraryPeriodFormView extends JetView {
   config() {
@@ -48,28 +50,76 @@ export default class ArbitraryPeriodFormView extends JetView {
             { view: "text", label: polyglot.t("begin_age"), id: "begin_age" },
             { view: "text", label: polyglot.t("end_age"), id: "end_age" },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("organization"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "organization_combo",
+                  label: polyglot.t("organization"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(OrganizationWindow);
+                    $$("organization_win").show();
+                  }
+                }
+              ]
             },
             {
-              view: "combo",
-              id: "combo2",
-              label: polyglot.t("standard_period"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "standard_period_combo",
+                  label: polyglot.t("standard_period"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(OrganizationWindow);
+                    $$("organization_win").show();
+                  }
+                }
+              ]
             },
             {
-              view: "combo",
-              id: "combo3",
-              label: polyglot.t("district"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "district_combo",
+                  label: polyglot.t("district"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(DistrictWindow);
+                    $$("district_win").show();
+                  }
+                }
+              ]
             },
             {
-              view: "combo",
-              id: "combo4",
-              label: polyglot.t("region"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "region_combo",
+                  label: polyglot.t("region"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(RegionWindow);
+                    $$("region_win").show();
+                  }
+                }
+              ]
             },
             {
               margin: 5,
@@ -117,7 +167,7 @@ export default class ArbitraryPeriodFormView extends JetView {
       this.item.endAge = value;
     });
 
-    $$("combo1").attachEvent("onChange", value => {
+    $$("organization_combo").attachEvent("onChange", value => {
       setDependency(
         CLS_ORGANIZATION,
         value,
@@ -126,7 +176,7 @@ export default class ArbitraryPeriodFormView extends JetView {
       );
     });
 
-    $$("combo2").attachEvent("onChange", value => {
+    $$("standard_period_combo").attachEvent("onChange", value => {
       setDependency(
         CLS_STANDARD_PERIOD,
         value,
@@ -135,18 +185,18 @@ export default class ArbitraryPeriodFormView extends JetView {
       );
     });
 
-    $$("combo3").attachEvent("onChange", value => {
+    $$("district_combo").attachEvent("onChange", value => {
       setDependency(CLS_DISTRICT, value, this.item, "clsDistrictByIdDistrict");
     });
 
-    $$("combo4").attachEvent("onChange", value => {
+    $$("region_combo").attachEvent("onChange", value => {
       setDependency(CLS_REGION, value, this.item, "clsRegionByIdRegion");
     });
 
-    fillCombo(CLS_ORGANIZATION, "combo1");
-    fillCombo(CLS_STANDARD_PERIOD, "combo2");
-    fillCombo(CLS_DISTRICT, "combo3");
-    fillCombo(CLS_REGION, "combo4");
+    fillCombo(CLS_ORGANIZATION, "organization_combo");
+    fillCombo(CLS_STANDARD_PERIOD, "standard_period_combo");
+    fillCombo(CLS_DISTRICT, "district_combo");
+    fillCombo(CLS_REGION, "region_combo");
   }
 
   urlChange(view, url) {
@@ -160,12 +210,14 @@ export default class ArbitraryPeriodFormView extends JetView {
         $$("number").setValue(data.json().number);
         $$("begin_age").setValue(data.json().beginAge);
         $$("end_age").setValue(data.json().endAge);
-        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization.id);
-        $$("combo2").setValue(
+        $$("organization_combo").setValue(
+          data.json().clsOrganizationByIdOrganization.id
+        );
+        $$("standard_period_combo").setValue(
           data.json().clsStandardPeriodByIdStandardPeriod.id
         );
-        $$("combo3").setValue(data.json().clsDistrictByIdDistrict.id);
-        $$("combo4").setValue(data.json().clsRegionByIdRegion.id);
+        $$("district_combo").setValue(data.json().clsDistrictByIdDistrict.id);
+        $$("region_combo").setValue(data.json().clsRegionByIdRegion.id);
       });
   }
 }

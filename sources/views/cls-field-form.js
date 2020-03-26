@@ -8,14 +8,11 @@ import {
   deleteRow,
   updateRow
 } from "~/util/api";
+import { OrganizationWindow } from "~/util/modal";
 
 export default class FieldFormView extends JetView {
   config() {
-    this.item = {
-      name: "",
-      number: "",
-      clsOrganizationByIdOrganization: null
-    };
+    this.item = {};
 
     return {
       rows: [
@@ -55,42 +52,16 @@ export default class FieldFormView extends JetView {
               cols: [
                 {
                   view: "combo",
-                  id: "combo1",
+                  id: "organization_combo",
                   label: polyglot.t("organization"),
                   options: {}
                 },
                 {
                   view: "button",
-                  id: "modal_open",
                   width: 50,
                   click: () => {
-                    webix.ui({
-                      view: "window",
-                      position: "center",
-                      height: 400,
-                      width: 400,
-                      close: true,
-                      modal: true,
-                      id: "mywin",
-                      // body: dt.config()
-                      body: {
-                        view: "datatable",
-                        columnWidth: 200,
-                        url: ROOT_URL + CLS_ORGANIZATION,
-                        select: true, //enables selection
-                        columns: [
-                          { id: "name", header: polyglot.t("name") },
-                          { id: "number", header: polyglot.t("number") }
-                        ],
-                        on: {
-                          onItemDblClick(id) {
-                            $$("combo1").setValue(id);
-                            $$("mywin").close();
-                          }
-                        }
-                      }
-                    });
-                    $$("mywin").show();
+                    const win = this.ui(OrganizationWindow);
+                    $$("organization_win").show();
                   }
                 }
               ]
@@ -133,7 +104,7 @@ export default class FieldFormView extends JetView {
       this.item.number = value;
     });
 
-    $$("combo1").attachEvent("onChange", value => {
+    $$("organization_combo").attachEvent("onChange", value => {
       setDependency(
         CLS_ORGANIZATION,
         value,
@@ -142,7 +113,7 @@ export default class FieldFormView extends JetView {
       );
     });
 
-    fillCombo(CLS_ORGANIZATION, "combo1");
+    fillCombo(CLS_ORGANIZATION, "organization_combo");
   }
 
   urlChange(view, url) {
@@ -154,7 +125,9 @@ export default class FieldFormView extends JetView {
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization.id);
+        $$("organization_combo").setValue(
+          data.json().clsOrganizationByIdOrganization.id
+        );
       });
   }
 }

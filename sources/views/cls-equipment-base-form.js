@@ -5,14 +5,19 @@ import {
   CLS_DEPART,
   CLS_DISTRICT,
   CLS_RANCH,
-  ACTION_CREATE,
-  ACTION_UPDATE,
   ROOT_URL
 } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
-import { saveRow, fillCombo } from "../util/api";
+import {
+  fillCombo,
+  setDependency,
+  saveRow,
+  deleteRow,
+  updateRow
+} from "~/util/api";
+import { DepartWindow, DistrictWindow } from "~/util/modal";
 
-export default class DataView extends JetView {
+export default class EquipmentBaseView extends JetView {
   config() {
     this.item = {
       name: "",
@@ -51,28 +56,76 @@ export default class DataView extends JetView {
             },
             { view: "text", label: polyglot.t("number"), id: "number" },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("organization"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "organization_combo",
+                  label: polyglot.t("organization"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(OrganizationWindow);
+                    $$("organization_win").show();
+                  }
+                }
+              ]
             },
             {
-              view: "combo",
-              id: "combo2",
-              label: polyglot.t("depart"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "depart_combo",
+                  label: polyglot.t("depart"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(DepartWindow);
+                    $$("depart_win").show();
+                  }
+                }
+              ]
             },
             {
-              view: "combo",
-              id: "combo3",
-              label: polyglot.t("district"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "district_combo",
+                  label: polyglot.t("district"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(DistrictWindow);
+                    $$("district_win").show();
+                  }
+                }
+              ]
             },
             {
-              view: "combo",
-              id: "combo4",
-              label: polyglot.t("ranch"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "ranch_combo",
+                  label: polyglot.t("ranch"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(RanchWindow);
+                    $$("ranch_win").show();
+                  }
+                }
+              ]
             },
             {
               margin: 5,
@@ -86,12 +139,14 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_EQUIPMENT_BASE, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_EQUIPMENT_BASE, this.item, this.id)
                 }
               ]
             }
@@ -110,7 +165,7 @@ export default class DataView extends JetView {
       this.item.number = value;
     });
 
-    $$("combo1").attachEvent("onChange", value => {
+    $$("organization_combo").attachEvent("onChange", value => {
       setDependency(
         CLS_ORGANIZATION,
         value,
@@ -119,38 +174,39 @@ export default class DataView extends JetView {
       );
     });
 
-    $$("combo2").attachEvent("onChange", value => {
+    $$("depart_combo").attachEvent("onChange", value => {
       setDependency(CLS_DEPART, value, this.item, "clsDepartByIdDepart");
     });
 
-    $$("combo3").attachEvent("onChange", value => {
+    $$("district_combo").attachEvent("onChange", value => {
       setDependency(CLS_DISTRICT, value, this.item, "clsDistrictByIdDistrict");
     });
 
-    $$("combo4").attachEvent("onChange", value => {
+    $$("ranch_combo").attachEvent("onChange", value => {
       setDependency(CLS_RANCH, value, this.item, "clsRanchByIdRanch");
     });
 
-    fillCombo(CLS_ORGANIZATION, "combo1");
-    fillCombo(CLS_DEPART, "combo2");
-    fillCombo(CLS_DISTRICT, "combo3");
-    fillCombo(CLS_RANCH, "combo4");
+    fillCombo(CLS_ORGANIZATION, "organization_combo");
+    fillCombo(CLS_DEPART, "depart_combo");
+    fillCombo(CLS_DISTRICT, "district_combo");
+    fillCombo(CLS_RANCH, "ranch_combo");
   }
 
   urlChange(view, url) {
-    // this.id = url[0].params.id;
-    const id = url[0].params.id;
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_EQUIPMENT_BASE + "/" + id)
+      .get(ROOT_URL + CLS_EQUIPMENT_BASE + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsOrganizationByIdOrganization.id);
-        $$("combo2").setValue(data.json().clsDepartByIdDepart.id);
-        $$("combo3").setValue(data.json().clsDistrictByIdDistrict.id);
-        $$("combo4").setValue(data.json().clsRanchByIdRanch.id);
+        $$("organization_combo").setValue(
+          data.json().clsOrganizationByIdOrganization.id
+        );
+        $$("depart_combo").setValue(data.json().clsDepartByIdDepart.id);
+        $$("district_combo").setValue(data.json().clsDistrictByIdDistrict.id);
+        $$("ranch_combo").setValue(data.json().clsRanchByIdRanch.id);
       });
   }
 }

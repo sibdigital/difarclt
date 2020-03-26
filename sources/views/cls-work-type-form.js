@@ -1,14 +1,12 @@
 import { JetView } from "webix-jet";
-import {
-  CLS_WORK_TYPE,
-  ACTION_CREATE,
-  ACTION_UPDATE,
-  ROOT_URL
-} from "~/util/constants.js";
+import { CLS_WORK_TYPE, ROOT_URL } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class WorkTypeFormView extends JetView {
   config() {
+    this.item = {
+      parentPath: "000"
+    };
     return {
       rows: [
         {
@@ -38,7 +36,8 @@ export default class DataView extends JetView {
             {
               view: "combo",
               id: "combo1",
-              options: {}
+              options: {},
+              label: polyglot.t("parent")
             },
             {
               margin: 5,
@@ -46,17 +45,20 @@ export default class DataView extends JetView {
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_WORK_TYPE, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_WORK_TYPE, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_WORK_TYPE, this.item, this.id)
                 }
               ]
             }
@@ -67,101 +69,31 @@ export default class DataView extends JetView {
   }
 
   init() {
-    webix
-      .ajax()
-      .get(ROOT_URL + CLS_WORK_TYPE)
-      .then(function(data) {
-        const list = $$("combo1")
-          .getPopup()
-          .getList();
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
 
-        const values = [];
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
 
-        list.clearAll();
-        list.parse(values);
-      });
+    $$("combo1").attachEvent("onChange", value => {
+      this.item.idParent = value;
+    });
+
+    fillCombo(CLS_WORK_TYPE, "combo1");
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_WORK_TYPE + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_WORK_TYPE + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
+        $$("combo1").setValue(data.json().idParent);
       });
-  }
-
-  saveRow() {
-    const urlPost = ROOT_URL + CLS_WORK_TYPE + ACTION_CREATE;
-
-    let item = {
-      name: $$("name").getValue(),
-      number: $$("number").getValue(),
-      idParent: $$("combo1").getValue(),
-      parentPath: "00000"
-    };
-
-    console.log(item.idParent);
-    webix
-      .ajax()
-      .headers({
-        "Content-Type": "application/json"
-      })
-      .post(urlPost, item)
-      .then(data => this.setBlank());
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_WORK_TYPE + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_WORK_TYPE + "/" + id;
-    let item;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item = data.json();
-        item.name = $$("name").getValue();
-        item.number = $$("number").getValue();
-        item.idParent = $$("combo1").getValue();
-        item.parentPath = "00000";
-
-        webix
-          .ajax()
-          .headers({
-            "Content-Type": "application/json"
-          })
-          .put(urlPut, item)
-          .then(data => this.setBlank());
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_WORK_TYPE + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$("name").setValue("");
-    $$("number").setValue("");
-    $$("code").setValue("");
-    $$("combo1").setValue("");
   }
 }

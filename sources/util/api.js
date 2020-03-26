@@ -19,16 +19,6 @@ function fillCombo(entity, combo) {
     });
 }
 
-function saveRow(entity, item) {
-  const url = ROOT_URL + entity + ACTION_CREATE;
-  webix
-    .ajax()
-    .headers({
-      "Content-Type": "application/json"
-    })
-    .post(url, item);
-}
-
 function setDependency(entity, value, item, property) {
   const url = ROOT_URL + entity + "/" + value;
   webix
@@ -39,14 +29,25 @@ function setDependency(entity, value, item, property) {
     });
 }
 
-function updateRow(entity, item) {
-  const url = ROOT_URL + entity + ACTION_UPDATE;
+function saveRow(entity, item) {
+  const url = ROOT_URL + entity + ACTION_CREATE;
   webix
     .ajax()
     .headers({
       "Content-Type": "application/json"
     })
-    .put(url);
+    .post(url, item);
+}
+
+function updateRow(entity, item, id) {
+  const url = ROOT_URL + entity + ACTION_UPDATE;
+  item.id = id;
+  webix
+    .ajax()
+    .headers({
+      "Content-Type": "application/json"
+    })
+    .put(url, item);
 }
 
 function deleteRow(entity, id) {

@@ -13,8 +13,9 @@ import {
   updateRow
 } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
+import { ConsumableKindWindow } from "~/util/modal";
 
-export default class DataView extends JetView {
+export default class ConsumableFormView extends JetView {
   config() {
     return {
       rows: [
@@ -43,16 +44,40 @@ export default class DataView extends JetView {
             { view: "text", label: polyglot.t("name"), id: "name" },
             { view: "text", label: polyglot.t("number"), id: "number" },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("unit"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "unit_combo",
+                  label: polyglot.t("unit"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(UnitWindow);
+                    $$("unit_win").show();
+                  }
+                }
+              ]
             },
             {
-              view: "combo",
-              id: "combo2",
-              label: polyglot.t("consumable_kind"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "consumable_kind_combo",
+                  label: polyglot.t("consumable_kind"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(ConsumableKindWindow);
+                    $$("consumable_kind_win").show();
+                  }
+                }
+              ]
             },
             {
               margin: 5,
@@ -73,7 +98,8 @@ export default class DataView extends JetView {
                   view: "button",
                   value: polyglot.t("update"),
                   id: "update",
-                  click: () => updateRow(CLS_CONSUMABLE_KIND, this.item)
+                  click: () =>
+                    updateRow(CLS_CONSUMABLE_KIND, this.item, this.id)
                 }
               ]
             }
@@ -92,11 +118,11 @@ export default class DataView extends JetView {
       this.item.number = value;
     });
 
-    $$("combo1").attachEvent("onChange", value => {
+    $$("unit_combo").attachEvent("onChange", value => {
       setDependency(CLS_UNIT, value, this.item, "clsUnitByIdUnit");
     });
 
-    $$("combo2").attachEvent("onChange", value => {
+    $$("consumable_kind_combo").attachEvent("onChange", value => {
       setDependency(
         CLS_CONSUMABLE_KIND,
         value,
@@ -105,8 +131,8 @@ export default class DataView extends JetView {
       );
     });
 
-    fillCombo(CLS_UNIT, "combo1");
-    fillCombo(CLS_CONSUMABLE_KIND, "combo2");
+    fillCombo(CLS_UNIT, "unit_combo");
+    fillCombo(CLS_CONSUMABLE_KIND, "consumable_kind_combo");
   }
 
   urlChange(view, url) {
@@ -118,8 +144,10 @@ export default class DataView extends JetView {
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
-        $$("combo1").setValue(data.json().clsUnitByIdUnit);
-        $$("combo2").setValue(data.json().clsConsumableKindByIdConsumableKind);
+        $$("unit_combo").setValue(data.json().clsUnitByIdUnit);
+        $$("consumable_kind_combo").setValue(
+          data.json().clsConsumableKindByIdConsumableKind
+        );
       });
   }
 }

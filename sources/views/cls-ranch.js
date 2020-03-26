@@ -2,7 +2,7 @@ import { JetView } from "webix-jet";
 import { ROOT_URL, CLS_RANCH } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class RanchView extends JetView {
   config() {
     return {
       rows: [

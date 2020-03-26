@@ -2,7 +2,7 @@ import { JetView } from "webix-jet";
 import { ROOT_URL, CLS_WEATHER_STATION } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
 
-export default class DataView extends JetView {
+export default class WeatherStationView extends JetView {
   config() {
     return {
       rows: [

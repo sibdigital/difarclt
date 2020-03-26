@@ -3,14 +3,21 @@ import {
   CLS_EMPLOYEE,
   CLS_DEPART,
   CLS_ORGANIZATION,
-  ACTION_CREATE,
-  ACTION_UPDATE,
   ROOT_URL
 } from "~/util/constants.js";
+import {
+  fillCombo,
+  setDependency,
+  saveRow,
+  deleteRow,
+  updateRow
+} from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
+import { DepartWindow, OrganizationWindow } from "~/util/modal";
 
-export default class DataView extends JetView {
+export default class EmployeeFormView extends JetView {
   config() {
+    this.item = {};
     return {
       rows: [
         {
@@ -41,34 +48,63 @@ export default class DataView extends JetView {
             { view: "text", label: polyglot.t("surname"), id: "surname" },
             { view: "text", label: polyglot.t("patronymic"), id: "patronymic" },
             {
-              view: "combo",
-              id: "combo1",
-              label: polyglot.t("depart"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "depart_combo",
+                  label: polyglot.t("depart"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(DepartWindow);
+                    $$("depart_win").show();
+                  }
+                }
+              ]
             },
+
             {
-              view: "combo",
-              id: "combo2",
-              label: polyglot.t("organization"),
-              options: {}
+              cols: [
+                {
+                  view: "combo",
+                  id: "organization_combo",
+                  label: polyglot.t("organization"),
+                  options: {}
+                },
+                {
+                  view: "button",
+                  width: 50,
+                  click: () => {
+                    const win = this.ui(OrganizationWindow);
+                    $$("organization_win").show();
+                  }
+                }
+              ]
             },
+
             {
               margin: 5,
               cols: [
                 {
                   view: "button",
                   value: polyglot.t("save"),
-                  id: "save"
+                  id: "save",
+                  click: () => saveRow(CLS_EMPLOYEE, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("delete"),
-                  id: "delete"
+                  id: "delete",
+                  click: () => deleteRow(CLS_EMPLOYEE, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("update"),
-                  id: "update"
+                  id: "update",
+                  click: () => updateRow(CLS_EMPLOYEE, this.item, this.id)
                 }
               ]
             }
@@ -79,150 +115,59 @@ export default class DataView extends JetView {
   }
 
   init() {
-    this.fillCombo(CLS_DEPART, "combo1");
-    this.fillCombo(CLS_ORGANIZATION, "combo2");
+    $$("name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
+
+    $$("number").attachEvent("onChange", value => {
+      this.item.number = value;
+    });
+
+    $$("first_name").attachEvent("onChange", value => {
+      this.item.name = value;
+    });
+
+    $$("surname").attachEvent("onChange", value => {
+      this.item.surname = value;
+    });
+
+    $$("patronymic").attachEvent("onChange", value => {
+      this.item.patronymic = value;
+    });
+
+    $$("depart_combo").attachEvent("onChange", value => {
+      setDependency(CLS_DEPART, value, this.item, "clsDepartByIdDepart");
+    });
+
+    $$("organization_combo").attachEvent("onChange", value => {
+      setDependency(
+        CLS_ORGANIZATION,
+        value,
+        this.item,
+        "clsOrganizationByIdOrganization"
+      );
+    });
+
+    fillCombo(CLS_DEPART, "depart_combo");
+    fillCombo(CLS_ORGANIZATION, "organization_combo");
   }
 
   urlChange(view, url) {
-    $$("save").attachEvent("onItemClick", () => this.saveRow());
-
-    $$("delete").attachEvent("onItemClick", () =>
-      this.deleteRow(url[0].params.id)
-    );
-
-    $$("update").attachEvent("onItemClick", () =>
-      this.updateRow(url[0].params.id)
-    );
+    this.id = url[0].params.id;
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_EMPLOYEE + "/" + url[0].params.id)
+      .get(ROOT_URL + CLS_EMPLOYEE + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);
         $$("first_name").setValue(data.json().firstname);
         $$("surname").setValue(data.json().surname);
         $$("patronymic").setValue(data.json().patronymic);
-        $$("combo1").setValue(data.json().clsDepartByIdDepart);
-        $$("combo2").setValue(data.json().clsOrganizationByIdOrganization);
+        $$("depart_combo").setValue(data.json().clsDepartByIdDepart.id);
+        $$("organization_combo").setValue(
+          data.json().clsOrganizationByIdOrganization.id
+        );
       });
-  }
-
-  fillCombo(entity, combo) {
-    webix
-      .ajax()
-      .get(ROOT_URL + entity)
-      .then(data => {
-        const list = $$(combo)
-          .getPopup()
-          .getList();
-        const values = [];
-
-        data.json().forEach(entry => {
-          values.push({ id: entry.id, value: entry.name });
-        });
-
-        list.clearAll();
-        list.parse(values);
-      });
-  }
-
-  saveRow() {
-    const urlPost = ROOT_URL + CLS_EMPLOYEE + ACTION_CREATE;
-    const url1 = ROOT_URL + CLS_DEPART + "/" + $$("combo1").getValue();
-    const url2 = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo2").getValue();
-
-    let item = {
-      name: $$("name").getValue(),
-      number: $$("number").getValue(),
-      firstname: $$("first_name").getValue(),
-      surname: $$("surname").getValue(),
-      patronymic: $$("patronymic").getValue()
-    };
-
-    webix
-      .ajax()
-      .get(url1)
-      .then(data => {
-        item.clsDepartByIdDepart = data.json();
-
-        webix
-          .ajax()
-          .get(url2)
-          .then(data => {
-            item.clsOrganizationByIdOrganization = data.json();
-
-            webix
-              .ajax()
-              .headers({
-                "Content-Type": "application/json"
-              })
-              .post(urlPost, item)
-              .then(data => this.setBlank());
-          });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
-  updateRow(id) {
-    const urlPut = ROOT_URL + CLS_EMPLOYEE + ACTION_UPDATE;
-    const urlGet = ROOT_URL + CLS_EMPLOYEE + "/" + id;
-    const url1 = ROOT_URL + CLS_DEPART + "/" + $$("combo1").getValue();
-    const url2 = ROOT_URL + CLS_ORGANIZATION + "/" + $$("combo2").getValue();
-    let item;
-
-    webix
-      .ajax()
-      .get(urlGet)
-      .then(data => {
-        item = data.json();
-        item.name = $$("name").getValue();
-        item.number = $$("number").getValue();
-        item.firstname = $$("first_name").getValue();
-        item.surname = $$("surname").getValue();
-        item.patronymic = $$("patronymic").getValue();
-
-        webix
-          .ajax()
-          .get(url1)
-          .then(data => {
-            item.clsDepartByIdDepart = data.json();
-
-            webix
-              .ajax()
-              .get(url2)
-              .then(data => {
-                item.clsOrganizationByIdOrganization = data.json();
-
-                webix
-                  .ajax()
-                  .headers({
-                    "Content-Type": "application/json"
-                  })
-                  .put(urlPut, item)
-                  .then(data => this.setBlank());
-              });
-          });
-      });
-  }
-
-  deleteRow(id) {
-    const url = ROOT_URL + CLS_EMPLOYEE + "/" + id;
-    webix
-      .ajax()
-      .del(url)
-      .then(data => this.setBlank());
-  }
-
-  setBlank() {
-    $$("name").setValue("");
-    $$("number").setValue("");
-    $$("combo1").setValue("");
-    $$("combo2").setValue("");
-    $$("first_name").setValue("");
-    $$("surname").setValue("");
-    $$("patronymic").setValue("");
   }
 }
