@@ -5,6 +5,13 @@ import {
   CLS_EMPLOYEE,
   ROOT_URL
 } from "~/util/constants.js";
+import {
+  fillCombo,
+  setDependency,
+  saveRow,
+  deleteRow,
+  updateRow
+} from "~/util/api";
 import { OrganizationWindow, EmployeeWindow } from "~/util/modal";
 import { polyglot } from "jet-locales/ru.js";
 
@@ -19,14 +26,14 @@ export default class UserFormView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: polyglot.t("back"),
+              label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-user")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: polyglot.t("form")
+              label: polyglot.t("form.form")
             }
           ]
         },
@@ -34,15 +41,19 @@ export default class UserFormView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: "name" },
-            { view: "text", label: polyglot.t("number"), id: "number" },
-            { view: "text", label: polyglot.t("password"), id: "password" },
+            { view: "text", label: polyglot.t("base.name"), id: "name" },
+            { view: "text", label: polyglot.t("base.number"), id: "number" },
+            {
+              view: "text",
+              label: polyglot.t("properties.password"),
+              id: "password"
+            },
             {
               cols: [
                 {
                   view: "combo",
                   id: "organization_combo",
-                  label: polyglot.t("organization"),
+                  label: polyglot.t("dependencies.organization"),
                   options: {}
                 },
                 {
@@ -78,19 +89,19 @@ export default class UserFormView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: polyglot.t("save"),
+                  value: polyglot.t("form.save"),
                   id: "save",
                   click: () => saveRow(CLS_USER, this.item)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("delete"),
+                  value: polyglot.t("form.delete"),
                   id: "delete",
                   click: () => deleteRow(CLS_USER, this.id)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("update"),
+                  value: polyglot.t("form.update"),
                   id: "update",
                   click: () => updateRow(CLS_USER, this.item, this.id)
                 }

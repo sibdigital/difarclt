@@ -23,14 +23,14 @@ export default class FieldFormView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: polyglot.t("back"),
+              label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-field")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: polyglot.t("form")
+              label: polyglot.t("form.form")
             }
           ]
         },
@@ -40,12 +40,12 @@ export default class FieldFormView extends JetView {
           elements: [
             {
               view: "text",
-              label: polyglot.t("name"),
+              label: polyglot.t("base.name"),
               id: "name"
             },
             {
               view: "text",
-              label: polyglot.t("number"),
+              label: polyglot.t("base.number"),
               id: "number"
             },
             {
@@ -53,7 +53,7 @@ export default class FieldFormView extends JetView {
                 {
                   view: "combo",
                   id: "organization_combo",
-                  label: polyglot.t("organization"),
+                  label: polyglot.t("dependencies.organization"),
                   options: {}
                 },
                 {
@@ -71,19 +71,19 @@ export default class FieldFormView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: polyglot.t("save"),
+                  value: polyglot.t("form.save"),
                   id: "save",
                   click: () => saveRow(CLS_FIELD, this.item)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("delete"),
+                  value: polyglot.t("form.delete"),
                   id: "delete",
                   click: () => deleteRow(CLS_FIELD, this.id)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("update"),
+                  value: polyglot.t("form.update"),
                   id: "update",
                   click: () => updateRow(CLS_FIELD, this.item)
                 }

@@ -5,7 +5,14 @@ import {
   ROOT_URL
 } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
-import { OrganizationWindow } from "../util/modal";
+import {
+  fillCombo,
+  setDependency,
+  saveRow,
+  deleteRow,
+  updateRow
+} from "~/util/api";
+import { OrganizationWindow } from "~/util/modal";
 
 export default class GpsModuleFormView extends JetView {
   config() {
@@ -19,14 +26,14 @@ export default class GpsModuleFormView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: polyglot.t("back"),
+              label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-gps-module")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: polyglot.t("form")
+              label: polyglot.t("form.form")
             }
           ]
         },
@@ -34,14 +41,14 @@ export default class GpsModuleFormView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: "name" },
-            { view: "text", label: polyglot.t("number"), id: "number" },
+            { view: "text", label: polyglot.t("base.name"), id: "name" },
+            { view: "text", label: polyglot.t("base.number"), id: "number" },
             {
               cols: [
                 {
                   view: "combo",
                   id: "organization_combo",
-                  label: polyglot.t("organization"),
+                  label: polyglot.t("dependencies.organization"),
                   options: {}
                 },
                 {
@@ -59,19 +66,19 @@ export default class GpsModuleFormView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: polyglot.t("save"),
+                  value: polyglot.t("form.save"),
                   id: "save",
                   click: () => saveRow(CLS_GPS_MODULE, this.item)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("delete"),
+                  value: polyglot.t("form.delete"),
                   id: "delete",
                   click: () => deleteRow(CLS_GPS_MODULE, this.id)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("update"),
+                  value: polyglot.t("form.update"),
                   id: "update",
                   click: () => updateRow(CLS_GPS_MODULE, this.item, this.id)
                 }

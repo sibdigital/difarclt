@@ -15,14 +15,14 @@ export default class PartnerView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: polyglot.t("back"),
+              label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-partner")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: polyglot.t("form")
+              label: polyglot.t("form.form")
             }
           ]
         },
@@ -30,15 +30,15 @@ export default class PartnerView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: "name" },
-            { view: "text", label: polyglot.t("number"), id: "number" },
-            { view: "text", label: polyglot.t("inn"), id: "inn" },
+            { view: "text", label: polyglot.t("base.name"), id: "name" },
+            { view: "text", label: polyglot.t("base.number"), id: "number" },
+            { view: "text", label: polyglot.t("properties.inn"), id: "inn" },
             {
               cols: [
                 {
                   view: "combo",
                   id: "legal_entity_combo",
-                  label: polyglot.t("legal_entity"),
+                  label: polyglot.t("dependencies.legal_entity"),
                   options: {}
                 },
                 {
@@ -56,19 +56,19 @@ export default class PartnerView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: polyglot.t("save"),
+                  value: polyglot.t("form.save"),
                   id: "save",
                   click: () => saveRow(CLS_PARTNER, this.item)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("delete"),
+                  value: polyglot.t("form.delete"),
                   id: "delete",
                   click: () => deleteRow(CLS_PARTNER, this.id)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("update"),
+                  value: polyglot.t("form.update"),
                   id: "update",
                   click: () => updateRow(CLS_PARTNER, this.item, this.id)
                 }

@@ -22,14 +22,14 @@ export default class FertilizerFormView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: polyglot.t("back"),
+              label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-fertilizer")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: polyglot.t("form")
+              label: polyglot.t("form.form")
             }
           ]
         },
@@ -37,17 +37,25 @@ export default class FertilizerFormView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: "name" },
-            { view: "text", label: polyglot.t("number"), id: "number" },
-            { view: "text", label: polyglot.t("code"), id: "code" },
-            { view: "text", label: polyglot.t("max_consum"), id: "max_consum" },
-            { view: "text", label: polyglot.t("min_consum"), id: "min_consum" },
+            { view: "text", label: polyglot.t("base.name"), id: "name" },
+            { view: "text", label: polyglot.t("base.number"), id: "number" },
+            { view: "text", label: polyglot.t("base.code"), id: "code" },
+            {
+              view: "text",
+              label: polyglot.t("properties.max_consum"),
+              id: "max_consum"
+            },
+            {
+              view: "text",
+              label: polyglot.t("properties.min_consum"),
+              id: "min_consum"
+            },
             {
               cols: [
                 {
                   view: "combo",
                   id: "unit_combo",
-                  label: polyglot.t("unit"),
+                  label: polyglot.t("dependencies.unit"),
                   options: {}
                 },
                 {
@@ -65,19 +73,19 @@ export default class FertilizerFormView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: polyglot.t("save"),
+                  value: polyglot.t("form.save"),
                   id: "save",
                   click: () => saveRow(CLS_FERTILIZER, this.item)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("delete"),
+                  value: polyglot.t("form.delete"),
                   id: "delete",
                   click: () => deleteRow(CLS_FERTILIZER, this.id)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("update"),
+                  value: polyglot.t("form.update"),
                   id: "update",
                   click: () => updateRow(CLS_FERTILIZER, this.item)
                 }

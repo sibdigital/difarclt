@@ -15,14 +15,14 @@ export default class AgeSexGroupFormView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: polyglot.t("back"),
+              label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-age-sex-group")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: polyglot.t("form")
+              label: polyglot.t("form.form")
             }
           ]
         },
@@ -30,38 +30,46 @@ export default class AgeSexGroupFormView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: "name" },
-            { view: "text", label: polyglot.t("code"), id: "code" },
-            { view: "text", label: polyglot.t("number"), id: "number" },
+            { view: "text", label: polyglot.t("base.name"), id: "name" },
+            { view: "text", label: polyglot.t("base.code"), id: "code" },
+            { view: "text", label: polyglot.t("base.number"), id: "number" },
             {
               view: "combo",
-              label: polyglot.t("sex"),
+              label: polyglot.t("properties.sex"),
               id: "sex",
               options: [
                 { id: 1, value: "М" },
                 { id: 2, value: "Ж" }
               ]
             },
-            { view: "text", label: polyglot.t("begin_age"), id: "begin_age" },
-            { view: "text", label: polyglot.t("end_age"), id: "end_age" },
+            {
+              view: "text",
+              label: polyglot.t("properties.begin_age"),
+              id: "begin_age"
+            },
+            {
+              view: "text",
+              label: polyglot.t("properties.end_age"),
+              id: "end_age"
+            },
             {
               margin: 5,
               cols: [
                 {
                   view: "button",
-                  value: polyglot.t("save"),
+                  value: polyglot.t("form.save"),
                   id: "save",
                   click: () => saveRow(CLS_AGE_SEX_GROUP, this.item)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("delete"),
+                  value: polyglot.t("form.delete"),
                   id: "delete",
                   click: () => deleteRow(CLS_AGE_SEX_GROUP, this.id)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("update"),
+                  value: polyglot.t("form.update"),
                   id: "update",
                   click: () => updateRow(CLS_AGE_SEX_GROUP, this.item, this.id)
                 }

@@ -9,7 +9,7 @@ export default class AreaView extends JetView {
         {
           view: "search",
           id: "tableSearch",
-          placeholder: polyglot.t("search"),
+          placeholder: polyglot.t("form.search"),
           on: {
             onTimedKeyPress: function() {
               const value = this.getValue().toLowerCase();
@@ -30,8 +30,8 @@ export default class AreaView extends JetView {
           url: ROOT_URL + CLS_AREA,
           select: true, //enables selection
           columns: [
-            { id: "name", header: polyglot.t("name") },
-            { id: "number", header: polyglot.t("number") }
+            { id: "name", header: polyglot.t("base.name") },
+            { id: "number", header: polyglot.t("base.number") }
           ],
           pager: "pager"
         },

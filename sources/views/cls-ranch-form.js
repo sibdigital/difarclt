@@ -6,6 +6,13 @@ import {
   CLS_DISTRICT,
   ROOT_URL
 } from "~/util/constants.js";
+import {
+  fillCombo,
+  setDependency,
+  saveRow,
+  deleteRow,
+  updateRow
+} from "~/util/api";
 import { DistrictWindow, DepartWindow } from "~/util/modal";
 import { polyglot } from "jet-locales/ru.js";
 
@@ -21,14 +28,14 @@ export default class RanchView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: polyglot.t("back"),
+              label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-ranch")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: polyglot.t("form")
+              label: polyglot.t("form.form")
             }
           ]
         },
@@ -36,14 +43,14 @@ export default class RanchView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: "name" },
-            { view: "text", label: polyglot.t("number"), id: "number" },
+            { view: "text", label: polyglot.t("base.name"), id: "name" },
+            { view: "text", label: polyglot.t("base.number"), id: "number" },
             {
               cols: [
                 {
                   view: "combo",
                   id: "organization_combo",
-                  label: polyglot.t("organization"),
+                  label: polyglot.t("dependencies.organization"),
                   options: {}
                 },
                 {
@@ -61,7 +68,7 @@ export default class RanchView extends JetView {
                 {
                   view: "combo",
                   id: "depart_combo",
-                  label: polyglot.t("depart"),
+                  label: polyglot.t("dependencies.depart"),
                   options: {}
                 },
                 {
@@ -79,7 +86,7 @@ export default class RanchView extends JetView {
                 {
                   view: "combo",
                   id: "district_combo",
-                  label: polyglot.t("district"),
+                  label: polyglot.t("dependencies.district"),
                   options: {}
                 },
                 {
@@ -97,19 +104,19 @@ export default class RanchView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: polyglot.t("save"),
+                  value: polyglot.t("form.save"),
                   id: "save",
                   click: () => saveRow(CLS_RANCH, this.item)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("delete"),
+                  value: polyglot.t("form.delete"),
                   id: "delete",
                   click: () => deleteRow(CLS_RANCH, this.id)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("update"),
+                  value: polyglot.t("form.update"),
                   id: "update",
                   click: () => updateRow(CLS_RANCH, this.item, this.id)
                 }

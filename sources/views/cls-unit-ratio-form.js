@@ -1,11 +1,12 @@
 import { JetView } from "webix-jet";
+import { CLS_UNIT_RATIO, CLS_UNIT, ROOT_URL } from "~/util/constants.js";
 import {
-  CLS_UNIT_RATIO,
-  CLS_UNIT,
-  ACTION_CREATE,
-  ACTION_UPDATE,
-  ROOT_URL
-} from "~/util/constants.js";
+  fillCombo,
+  setDependency,
+  saveRow,
+  deleteRow,
+  updateRow
+} from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
 export default class UnitRatioView extends JetView {
@@ -19,14 +20,14 @@ export default class UnitRatioView extends JetView {
               view: "button",
               width: 100,
               css: "webix_transparent",
-              label: polyglot.t("back"),
+              label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-unit-ratio")
             },
             {
               view: "label",
               css: "webix_transparent",
               width: 100,
-              label: polyglot.t("form")
+              label: polyglot.t("form.form")
             }
           ]
         },
@@ -34,8 +35,8 @@ export default class UnitRatioView extends JetView {
           view: "form",
           id: "form",
           elements: [
-            { view: "text", label: polyglot.t("name"), id: "name" },
-            { view: "text", label: polyglot.t("number"), id: "number" },
+            { view: "text", label: polyglot.t("base.name"), id: "name" },
+            { view: "text", label: polyglot.t("base.number"), id: "number" },
             { view: "text", label: polyglot.t("ratio"), id: "ratio" },
             {
               view: "combo",
@@ -52,19 +53,19 @@ export default class UnitRatioView extends JetView {
               cols: [
                 {
                   view: "button",
-                  value: polyglot.t("save"),
+                  value: polyglot.t("form.save"),
                   id: "save",
                   click: () => saveRow(CLS_UNIT_RATIO, this.item)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("delete"),
+                  value: polyglot.t("form.delete"),
                   id: "delete",
                   click: () => deleteRow(CLS_UNIT_RATIO, this.id)
                 },
                 {
                   view: "button",
-                  value: polyglot.t("update"),
+                  value: polyglot.t("form.update"),
                   id: "update",
                   click: () => updateRow(CLS_UNIT_RATIO, this.item, this.id)
                 }
