@@ -27,7 +27,15 @@ export default class ArbitraryPeriodView extends JetView {
           view: "datatable",
           id: "table",
           columnWidth: 200,
-          url: ROOT_URL + CLS_ARBITRARY_PERIOD,
+          url: () => {
+            return webix
+              .ajax()
+              .headers({
+                "Content-Type": "application/json",
+                Authorization: webix.storage.local.get("auth")
+              })
+              .get(ROOT_URL + CLS_ARBITRARY_PERIOD);
+          },
           select: true, //enables selection
           columns: [
             { id: "name", header: polyglot.t("base.name") },

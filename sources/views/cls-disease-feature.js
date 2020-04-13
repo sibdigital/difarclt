@@ -28,7 +28,15 @@ export default class DiseaseFeatureView extends JetView {
           id: "table",
           // width: 400,
           columnWidth: 200,
-          url: ROOT_URL + CLS_DISEASE_FEATURE,
+          url: () => {
+            return webix
+              .ajax()
+              .headers({
+                "Content-Type": "application/json",
+                Authorization: webix.storage.local.get("auth")
+              })
+              .get(ROOT_URL + CLS_DISEASE_FEATURE);
+          },
           select: true, //enables selection
           columns: [
             { id: "name", header: polyglot.t("base.name") },
