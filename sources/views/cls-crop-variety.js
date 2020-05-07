@@ -27,7 +27,15 @@ export default class CropVarietyView extends JetView {
           view: "datatable",
           id: "table",
           columnWidth: 200,
-          url: ROOT_URL + CLS_CROP_VARIETY,
+          url: () => {
+            return webix
+              .ajax()
+              .headers({
+                "Content-Type": "application/json",
+                Authorization: webix.storage.local.get("auth")
+              })
+              .get(ROOT_URL + CLS_CROP_VARIETY);
+          },
           select: true, //enables selection
           columns: [
             { id: "name", header: polyglot.t("base.name") },

@@ -152,4 +152,10 @@ export default class TopView extends JetView {
   init() {
     this.use(plugins.Menu, "top:menu");
   }
+
+  urlChange() {
+    if (webix.storage.local.get("auth") == null) {
+      this.app.show("/login");
+    }
+  }
 }

@@ -27,7 +27,15 @@ export default class ProtectionEquipmentView extends JetView {
           view: "datatable",
           id: "table",
           columnWidth: 200,
-          url: ROOT_URL + CLS_PROTECTION_EQUIPMENT,
+          url: () => {
+            return webix
+              .ajax()
+              .headers({
+                "Content-Type": "application/json",
+                Authorization: webix.storage.local.get("auth")
+              })
+              .get(ROOT_URL + CLS_PROTECTION_EQUIPMENT);
+          },
           select: true, //enables selection
           columns: [
             { id: "name", header: polyglot.t("base.name") },
