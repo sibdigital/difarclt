@@ -25,7 +25,7 @@ export default class EmployeeFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-employee")
@@ -33,8 +33,8 @@ export default class EmployeeFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.employee")
             }
           ]
         },
@@ -44,9 +44,21 @@ export default class EmployeeFormView extends JetView {
           elements: [
             { view: "text", label: polyglot.t("base.name"), id: "name" },
             { view: "text", label: polyglot.t("base.number"), id: "number" },
-            { view: "text", label: polyglot.t("first_name"), id: "first_name" },
-            { view: "text", label: polyglot.t("surname"), id: "surname" },
-            { view: "text", label: polyglot.t("patronymic"), id: "patronymic" },
+            {
+              view: "text",
+              label: polyglot.t("properties.first_name"),
+              id: "first_name"
+            },
+            {
+              view: "text",
+              label: polyglot.t("properties.surname"),
+              id: "surname"
+            },
+            {
+              view: "text",
+              label: polyglot.t("properties.patronymic"),
+              id: "patronymic"
+            },
             {
               cols: [
                 {
@@ -124,7 +136,7 @@ export default class EmployeeFormView extends JetView {
     });
 
     $$("first_name").attachEvent("onChange", value => {
-      this.item.name = value;
+      this.item.firstname = value;
     });
 
     $$("surname").attachEvent("onChange", value => {
@@ -157,6 +169,9 @@ export default class EmployeeFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_EMPLOYEE + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

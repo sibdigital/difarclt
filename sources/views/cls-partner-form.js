@@ -1,6 +1,13 @@
 import { JetView } from "webix-jet";
 import { CLS_PARTNER, CLS_LEGAL_ENTITY, ROOT_URL } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
+import {
+  saveRow,
+  deleteRow,
+  updateRow,
+  fillCombo,
+  setDependency
+} from "~/util/api";
 import { LegalEntityWindow } from "~/util/modal";
 
 export default class PartnerView extends JetView {
@@ -13,7 +20,7 @@ export default class PartnerView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-partner")
@@ -21,8 +28,8 @@ export default class PartnerView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.partner")
             }
           ]
         },
@@ -110,6 +117,9 @@ export default class PartnerView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_PARTNER + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

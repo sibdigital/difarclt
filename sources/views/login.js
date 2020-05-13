@@ -32,11 +32,7 @@ export default class LoginView extends JetView {
                   .headers({
                     "Content-Type": "application/json"
                   })
-                  .post(ROOT_URL + "/login", credentials, function(
-                    text,
-                    data,
-                    xhr
-                  ) {
+                  .post(ROOT_URL + "/login", credentials, (text, data, xhr) => {
                     const auth = xhr.getResponseHeader("Authorization");
                     webix.storage.local.put("auth", auth);
                   })

@@ -16,7 +16,7 @@ import {
 } from "~/util/api";
 import { OrganizationWindow } from "~/util/modal";
 import { polyglot } from "jet-locales/ru";
-import { DistrictWindow, RegionalWindow } from "../util/modal";
+import { DistrictWindow, RegionWindow } from "../util/modal";
 
 export default class ArbitraryPeriodFormView extends JetView {
   config() {
@@ -28,7 +28,7 @@ export default class ArbitraryPeriodFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-arbitrary-period")
@@ -36,7 +36,7 @@ export default class ArbitraryPeriodFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
+              width: 150,
               label: polyglot.t("form.form")
             }
           ]
@@ -148,7 +148,8 @@ export default class ArbitraryPeriodFormView extends JetView {
                   view: "button",
                   value: polyglot.t("form.update"),
                   id: "update",
-                  click: () => updateRow(CLS_ARBITRARY_PERIOD, this.item)
+                  click: () =>
+                    updateRow(CLS_ARBITRARY_PERIOD, this.item, this.id)
                 }
               ]
             }
@@ -212,6 +213,9 @@ export default class ArbitraryPeriodFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_ARBITRARY_PERIOD + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

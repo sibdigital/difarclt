@@ -19,7 +19,7 @@ export default class ConsumableKindFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-consumable-kind")
@@ -27,8 +27,8 @@ export default class ConsumableKindFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.consumable_kind")
             }
           ]
         },
@@ -88,6 +88,9 @@ export default class ConsumableKindFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_CONSUMABLE_KIND + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

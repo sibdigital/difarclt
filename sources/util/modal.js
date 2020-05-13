@@ -14,7 +14,8 @@ import {
   CLS_EQUIPMENT_TYPE,
   CLS_KIND_ANIMAL
 } from "~/util/constants.js";
-import { polyglot } from "jet-locales/ru.js";
+import { fetchData } from "./api";
+import { polyglot } from "jet-locales/ru";
 
 const win = {
   view: "window",
@@ -40,13 +41,15 @@ class OrganizationWindow extends JetView {
     return {
       ...win,
       id: "organization_win",
+      head: polyglot.t("dependencies.organization"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_ORGANIZATION,
+        url: () => {
+          return fetchData(CLS_ORGANIZATION);
+        },
         on: {
           onItemDblClick(id) {
-            $$(combo).setValue(id);
-            // $$("organization_combo").setValue(id);
+            $$("organization_combo").setValue(id);
             $$("organization_win").close();
           }
         }
@@ -60,9 +63,12 @@ class CropWindow extends JetView {
     return {
       ...win,
       id: "crop_win",
+      head: polyglot.t("dependencies.crop"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_CROP,
+        url: () => {
+          return fetchData(CLS_CROP);
+        },
         on: {
           onItemDblClick(id) {
             $$("crop_combo").setValue(id);
@@ -79,9 +85,12 @@ class ConsumableKindWindow extends JetView {
     return {
       ...win,
       id: "consumable_kind_win",
+      head: polyglot.t("dependencies.consumable_kind"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_CONSUMABLE_KIND,
+        url: () => {
+          return fetchData(CLS_CONSUMABLE_KIND);
+        },
         on: {
           onItemDblClick(id) {
             $$("consumable_kind_combo").setValue(id);
@@ -98,9 +107,12 @@ class DepartWindow extends JetView {
     return {
       ...win,
       id: "depart_win",
+      head: polyglot.t("dependencies.depart"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_DEPART,
+        url: () => {
+          return fetchData(CLS_DEPART);
+        },
         on: {
           onItemDblClick(id) {
             $$("depart_combo").setValue(id);
@@ -117,9 +129,12 @@ class DistrictWindow extends JetView {
     return {
       ...win,
       id: "district_win",
+      head: polyglot.t("dependencies.district"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_DISTRICT,
+        url: () => {
+          return fetchData(CLS_DISTRICT);
+        },
         on: {
           onItemDblClick(id) {
             $$("district_combo").setValue(id);
@@ -136,9 +151,12 @@ class UnitWindow extends JetView {
     return {
       ...win,
       id: "unit_win",
+      head: polyglot.t("dependencies.unit"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_UNIT,
+        url: () => {
+          return fetchData(CLS_UNIT);
+        },
         on: {
           onItemDblClick(id) {
             $$("unit_combo").setValue(id);
@@ -155,9 +173,12 @@ class RanchWindow extends JetView {
     return {
       ...win,
       id: "ranch_win",
+      head: polyglot.t("dependencies.ranch"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_RANCH,
+        url: () => {
+          return fetchData(CLS_RANCH);
+        },
         on: {
           onItemDblClick(id) {
             $$("ranch_combo").setValue(id);
@@ -174,9 +195,12 @@ class RegionWindow extends JetView {
     return {
       ...win,
       id: "region_win",
+      head: polyglot.t("dependencies.region"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_REGION,
+        url: () => {
+          return fetchData(CLS_REGION);
+        },
         on: {
           onItemDblClick(id) {
             $$("region_combo").setValue(id);
@@ -193,9 +217,12 @@ class StandardPeriodWindow extends JetView {
     return {
       ...win,
       id: "standard_period_win",
+      head: polyglot.t("dependencies.standard_period"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_STANDARD_PERIOD,
+        url: () => {
+          return fetchData(CLS_STANDARD_PERIOD);
+        },
         on: {
           onItemDblClick(id) {
             $$("standard_period_combo").setValue(id);
@@ -212,9 +239,12 @@ class LegalEntityWindow extends JetView {
     return {
       ...win,
       id: "legal_entity_win",
+      head: polyglot.t("dependencies.legal_entity"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_LEGAL_ENTITY,
+        url: () => {
+          return fetchData(CLS_LEGAL_ENTITY);
+        },
         on: {
           onItemDblClick(id) {
             $$("legal_entity_combo").setValue(id);
@@ -231,9 +261,12 @@ class EquipmentTypeWindow extends JetView {
     return {
       ...win,
       id: "kind_animal_win",
+      head: polyglot.t("dependencies.equipment_type"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_EQUIPMENT_TYPE,
+        url: () => {
+          return fetchData(CLS_EQUIPMENT_TYPE);
+        },
         on: {
           onItemDblClick(id) {
             $$("kind_animal_combo").setValue(id);
@@ -250,9 +283,12 @@ class KindAnimalWindow extends JetView {
     return {
       ...win,
       id: "kind_animal_win",
+      head: polyglot.t("dependencies.kind_animal"),
       body: {
         ...table,
-        url: ROOT_URL + CLS_KIND_ANIMAL,
+        url: () => {
+          return fetchData(CLS_KIND_ANIMAL);
+        },
         on: {
           onItemDblClick(id) {
             $$("kind_animal_combo").setValue(id);

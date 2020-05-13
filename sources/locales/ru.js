@@ -19,6 +19,7 @@ polyglot.extend({
     max_incub_period: "Максимальный инкубационный период",
     min_consum: "Нормативный расход минимальный",
     min_incub_period: "Минимальный инкубационный период",
+    parent: "Родитель",
     password: "Пароль",
     patronymic: "Отчество",
     period_type: "Тип периода",
@@ -42,7 +43,6 @@ polyglot.extend({
   dependencies: {
     age_sex_group: "Половозрастные группы",
     animal_group_kind: "Виды групп животных",
-    animal_kind: "Вид животного",
     animal_param_kind: "Виды параметров животных",
     animal_retirement_cause: "Причины выбытия",
     arbitrary_period: "Произвольный период",
@@ -72,6 +72,7 @@ polyglot.extend({
     position: "Должность",
     protection_equipment: "Средство защиты растений",
     ranch: "Ферма",
+    reduct: "Сокращение",
     region: "Регион",
     resource: "Ресурсы",
     role: "Роль",

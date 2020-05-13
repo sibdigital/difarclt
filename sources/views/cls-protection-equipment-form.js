@@ -23,7 +23,7 @@ export default class ProtectionEquipmentView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-protection-equipment")
@@ -31,8 +31,8 @@ export default class ProtectionEquipmentView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.protection_equipment")
             }
           ]
         },
@@ -114,11 +114,11 @@ export default class ProtectionEquipmentView extends JetView {
       this.item.code = value;
     });
 
-    $$("min_incub_period").attachEvent("onChange", value => {
+    $$("min_consum").attachEvent("onChange", value => {
       this.item.minConsum = value;
     });
 
-    $$("max_incub_period").attachEvent("onChange", value => {
+    $$("max_consum").attachEvent("onChange", value => {
       this.item.maxConsum = value;
     });
 
@@ -134,6 +134,9 @@ export default class ProtectionEquipmentView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_PROTECTION_EQUIPMENT + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

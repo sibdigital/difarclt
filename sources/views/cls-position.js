@@ -1,6 +1,7 @@
 import { JetView } from "webix-jet";
 import { ROOT_URL, CLS_POSITION } from "~/util/constants.js";
 import { polyglot } from "jet-locales/ru.js";
+import { filterTable, fetchData } from "~/util/api";
 
 export default class PositionView extends JetView {
   config() {
@@ -12,14 +13,7 @@ export default class PositionView extends JetView {
           placeholder: polyglot.t("form.search"),
           on: {
             onTimedKeyPress: function() {
-              const value = this.getValue().toLowerCase();
-              if (!value) {
-                $$("table").filter();
-              } else {
-                $$("table").filter(function(obj) {
-                  return obj.name.toLowerCase().indexOf(value) != -1;
-                });
-              }
+              filterTable.call(this, "table");
             }
           }
         },
@@ -28,13 +22,7 @@ export default class PositionView extends JetView {
           id: "table",
           columnWidth: 200,
           url: () => {
-            return webix
-              .ajax()
-              .headers({
-                "Content-Type": "application/json",
-                Authorization: webix.storage.local.get("auth")
-              })
-              .get(ROOT_URL + CLS_POSITION);
+            return fetchData(CLS_POSITION);
           },
           select: true, //enables selection
           columns: [

@@ -13,7 +13,7 @@ export default class AgeSexGroupFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-age-sex-group")
@@ -21,7 +21,7 @@ export default class AgeSexGroupFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
+              width: 150,
               label: polyglot.t("form.form")
             }
           ]
@@ -38,8 +38,8 @@ export default class AgeSexGroupFormView extends JetView {
               label: polyglot.t("properties.sex"),
               id: "sex",
               options: [
-                { id: 1, value: "М" },
-                { id: 2, value: "Ж" }
+                { id: 0, value: "М" },
+                { id: 1, value: "Ж" }
               ]
             },
             {
@@ -91,7 +91,11 @@ export default class AgeSexGroupFormView extends JetView {
     });
 
     $$("code").attachEvent("onChange", value => {
-      this.item.number = value;
+      this.item.code = value;
+    });
+
+    $$("sex").attachEvent("onChange", value => {
+      this.item.sex = value.id;
     });
   }
 
@@ -99,6 +103,9 @@ export default class AgeSexGroupFormView extends JetView {
     this.id = url[0].params.id;
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_AGE_SEX_GROUP + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

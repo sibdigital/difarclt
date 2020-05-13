@@ -19,7 +19,7 @@ export default class PlantPestFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-plant-pest")
@@ -27,8 +27,8 @@ export default class PlantPestFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.plant_pest")
             }
           ]
         },
@@ -74,19 +74,19 @@ export default class PlantPestFormView extends JetView {
                   view: "button",
                   value: polyglot.t("form.save"),
                   id: "save",
-                  click: () => saveRow(CLS_DISTRICT, this.item)
+                  click: () => saveRow(CLS_PLANT_PEST, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("form.delete"),
                   id: "delete",
-                  click: () => deleteRow(CLS_DISTRICT, this.id)
+                  click: () => deleteRow(CLS_PLANT_PEST, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("form.update"),
                   id: "update",
-                  click: () => updateRow(CLS_DISTRICT, this.item, this.id)
+                  click: () => updateRow(CLS_PLANT_PEST, this.item, this.id)
                 }
               ]
             }
@@ -129,6 +129,9 @@ export default class PlantPestFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_PLANT_PEST + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

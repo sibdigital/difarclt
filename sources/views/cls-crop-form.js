@@ -14,7 +14,7 @@ export default class CropFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-crop")
@@ -22,8 +22,8 @@ export default class CropFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.crop")
             }
           ]
         },
@@ -93,6 +93,9 @@ export default class CropFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_CROP + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

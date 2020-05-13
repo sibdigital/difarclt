@@ -13,7 +13,7 @@ export default class AnimalGroupKindFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-animal-group-kind")
@@ -21,8 +21,8 @@ export default class AnimalGroupKindFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.animal_group_kind")
             }
           ]
         },
@@ -73,7 +73,7 @@ export default class AnimalGroupKindFormView extends JetView {
     });
 
     $$("code").attachEvent("onChange", value => {
-      this.item.number = value;
+      this.item.code = value;
     });
   }
 
@@ -81,6 +81,9 @@ export default class AnimalGroupKindFormView extends JetView {
     this.id = url[0].params.id;
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_ANIMAL_GROUP_KIND + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

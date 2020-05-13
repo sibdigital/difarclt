@@ -11,7 +11,7 @@ export default class UnitFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-unit")
@@ -19,8 +19,8 @@ export default class UnitFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.unit")
             }
           ]
         },
@@ -31,7 +31,11 @@ export default class UnitFormView extends JetView {
             { view: "text", label: polyglot.t("base.name"), id: "name" },
             { view: "text", label: polyglot.t("base.code"), id: "code" },
             { view: "text", label: polyglot.t("base.number"), id: "number" },
-            { view: "text", label: polyglot.t("reduct"), id: "reduct" },
+            {
+              view: "text",
+              label: polyglot.t("properties.reduct"),
+              id: "reduct"
+            },
             {
               margin: 5,
               cols: [
@@ -84,7 +88,10 @@ export default class UnitFormView extends JetView {
 
     webix
       .ajax()
-      .get(ROOT_URL + CLS_ROLE + "/" + this.id)
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
+      .get(ROOT_URL + CLS_UNIT + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
         $$("number").setValue(data.json().number);

@@ -20,7 +20,7 @@ export default class CropVarietyFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-crop-variety")
@@ -28,8 +28,8 @@ export default class CropVarietyFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.crop_variety")
             }
           ]
         },
@@ -44,7 +44,7 @@ export default class CropVarietyFormView extends JetView {
                 {
                   view: "combo",
                   id: "crop_combo",
-                  label: polyglot.t("crop"),
+                  label: polyglot.t("dependencies.crop"),
                   options: {}
                 },
                 {
@@ -104,9 +104,13 @@ export default class CropVarietyFormView extends JetView {
 
   urlChange(view, url) {
     this.id = url[0].params.id;
+    console.log(ROOT_URL + CLS_CROP_VARIETY + "/" + this.id);
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_CROP_VARIETY + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

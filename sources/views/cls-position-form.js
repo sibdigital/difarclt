@@ -19,7 +19,7 @@ export default class PositionFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-position")
@@ -27,8 +27,8 @@ export default class PositionFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.position")
             }
           ]
         },
@@ -69,19 +69,19 @@ export default class PositionFormView extends JetView {
                   view: "button",
                   value: polyglot.t("form.save"),
                   id: "save",
-                  click: () => saveRow(CLS_DISTRICT, this.item)
+                  click: () => saveRow(CLS_POSITION, this.item)
                 },
                 {
                   view: "button",
                   value: polyglot.t("form.delete"),
                   id: "delete",
-                  click: () => deleteRow(CLS_DISTRICT, this.id)
+                  click: () => deleteRow(CLS_POSITION, this.id)
                 },
                 {
                   view: "button",
                   value: polyglot.t("form.update"),
                   id: "update",
-                  click: () => updateRow(CLS_DISTRICT, this.item, this.id)
+                  click: () => updateRow(CLS_POSITION, this.item, this.id)
                 }
               ]
             }
@@ -120,6 +120,9 @@ export default class PositionFormView extends JetView {
     this.id = url[0].params.id;
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_POSITION + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

@@ -13,7 +13,7 @@ export default class AnimalParamKindFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-animal-param-kind")
@@ -21,8 +21,8 @@ export default class AnimalParamKindFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.animal_param_kind")
             }
           ]
         },
@@ -78,9 +78,12 @@ export default class AnimalParamKindFormView extends JetView {
   }
 
   urlChange(view, url) {
-    this.url = url[0].params.id;
+    this.id = url[0].params.id;
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_ANIMAL_PARAM_KIND + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

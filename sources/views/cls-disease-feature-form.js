@@ -13,7 +13,7 @@ export default class DiseaseFeatureFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-disease-feature")
@@ -21,8 +21,8 @@ export default class DiseaseFeatureFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.disease_feature")
             }
           ]
         },
@@ -82,6 +82,9 @@ export default class DiseaseFeatureFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_DISEASE_FEATURE + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

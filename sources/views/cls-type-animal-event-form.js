@@ -13,7 +13,7 @@ export default class TypeAnimalEventFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-type-animal-event")
@@ -21,8 +21,8 @@ export default class TypeAnimalEventFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.type_animal_event")
             }
           ]
         },
@@ -77,6 +77,9 @@ export default class TypeAnimalEventFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_TYPE_ANIMAL_EVENT + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

@@ -24,7 +24,7 @@ export default class GpsModuleFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-gps-module")
@@ -32,8 +32,8 @@ export default class GpsModuleFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.gps_module")
             }
           ]
         },
@@ -116,6 +116,9 @@ export default class GpsModuleFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_GPS_MODULE + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

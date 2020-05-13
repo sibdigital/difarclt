@@ -5,7 +5,7 @@ import { polyglot } from "jet-locales/ru.js";
 
 export default class RegionFormView extends JetView {
   config() {
-    this.id = {};
+    this.item = {};
     return {
       rows: [
         {
@@ -17,7 +17,7 @@ export default class RegionFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-region")
@@ -25,8 +25,8 @@ export default class RegionFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.region")
             }
           ]
         },
@@ -85,6 +85,9 @@ export default class RegionFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_REGION + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

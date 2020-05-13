@@ -21,7 +21,7 @@ export default class FieldFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-field")
@@ -29,8 +29,8 @@ export default class FieldFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.field")
             }
           ]
         },
@@ -113,7 +113,7 @@ export default class FieldFormView extends JetView {
       );
     });
 
-    fillCombo(CLS_ORGANIZATION, "organization_combo");
+    fillCombo.call(this, CLS_ORGANIZATION, "organization_combo");
   }
 
   urlChange(view, url) {
@@ -121,6 +121,9 @@ export default class FieldFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_FIELD + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

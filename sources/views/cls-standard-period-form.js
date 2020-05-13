@@ -1,5 +1,6 @@
 import { JetView } from "webix-jet";
 import { ROOT_URL, CLS_STANDARD_PERIOD } from "~/util/constants.js";
+import { saveRow, deleteRow, updateRow } from "~/util/api";
 import { polyglot } from "jet-locales/ru.js";
 
 export default class StandardPeriodView extends JetView {
@@ -12,7 +13,7 @@ export default class StandardPeriodView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-standard-period")
@@ -20,8 +21,8 @@ export default class StandardPeriodView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.standard_period")
             }
           ]
         },
@@ -105,6 +106,9 @@ export default class StandardPeriodView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_STANDARD_PERIOD + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);

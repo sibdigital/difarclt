@@ -20,7 +20,7 @@ export default class BreedFormView extends JetView {
           elements: [
             {
               view: "button",
-              width: 100,
+              width: 150,
               css: "webix_transparent",
               label: polyglot.t("form.back"),
               click: () => this.app.show("/top/cls-breed")
@@ -28,8 +28,8 @@ export default class BreedFormView extends JetView {
             {
               view: "label",
               css: "webix_transparent",
-              width: 100,
-              label: polyglot.t("form.form")
+              width: 150,
+              label: polyglot.t("dependencies.breed")
             }
           ]
         },
@@ -44,7 +44,7 @@ export default class BreedFormView extends JetView {
                 {
                   view: "combo",
                   id: "kind_animal_combo",
-                  label: polyglot.t("animal_kind"),
+                  label: polyglot.t("dependencies.kind_animal"),
                   options: {}
                 },
                 {
@@ -112,6 +112,9 @@ export default class BreedFormView extends JetView {
 
     webix
       .ajax()
+      .headers({
+        Authorization: webix.storage.local.get("auth")
+      })
       .get(ROOT_URL + CLS_BREED + "/" + this.id)
       .then(data => {
         $$("name").setValue(data.json().name);
